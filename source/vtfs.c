@@ -6,6 +6,7 @@
 #include <linux/module.h>
 #include <linux/printk.h>
 #include <linux/string.h>
+#include <linux/uaccess.h>
 
 #include "vtfs_interface.h"
 
@@ -33,7 +34,8 @@ struct file_operations vtfs_dir_ops = {
 };
 
 struct file_operations vtfs_file_ops = {
-    // read and write ops will be added im part 8
+    .read = vtfs_read,
+    .write = vtfs_write,
 };
 
 static int __init vtfs_init(void) {
@@ -153,6 +155,7 @@ struct dentry* vtfs_lookup(
 
     struct inode* inode = vtfs_get_inode(parent_inode->i_sb, NULL, mode, meta.ino);
     if (inode) {
+      inode->i_size = meta.size;
       if (meta.type == VTFS_NODE_DIR) {
         inode->i_op = &vtfs_inode_ops;
         inode->i_fop = &vtfs_dir_ops;
@@ -228,6 +231,7 @@ int vtfs_create(
   if (!inode)
     return -ENOMEM;
 
+  inode->i_size = meta.size;
   inode->i_op = &vtfs_inode_ops;
   inode->i_fop = &vtfs_file_ops;
 
@@ -263,6 +267,73 @@ struct dentry* vtfs_mkdir(
 
 int vtfs_rmdir(struct inode* parent_inode, struct dentry* child_dentry) {
   return storage_ops->rmdir(parent_inode->i_sb, parent_inode->i_ino, child_dentry->d_name.name);
+}
+
+// Helper function to validate I/O parameters
+int vtfs_validate_io_params(loff_t offset, size_t len, loff_t* new_size_out) {
+  if (offset < 0)
+    return -EINVAL;
+
+  if (new_size_out) {
+    loff_t new_size = offset + len;
+    if (new_size < 0)  // Overflow check
+      return -EFBIG;
+    *new_size_out = new_size;
+  }
+  return 0;
+}
+
+// Helper function to update inode size after write
+void vtfs_update_inode_size(struct inode* inode, loff_t new_size) {
+  if (new_size > inode->i_size) {
+    inode->i_size = new_size;
+  }
+}
+
+ssize_t vtfs_read(struct file* filp, char __user* buffer, size_t len, loff_t* offset) {
+  struct inode* inode = file_inode(filp);
+  if (!storage_ops->read)
+    return -ENOSYS;
+
+  // Use filp->f_pos as offset if offset parameter is not provided
+  loff_t pos = (offset) ? *offset : filp->f_pos;
+  ssize_t ret = storage_ops->read(inode->i_sb, inode->i_ino, buffer, len, &pos);
+  if (ret > 0) {
+    if (offset) {
+      *offset = pos;
+    }
+    filp->f_pos = pos;
+  }
+  return ret;
+}
+
+ssize_t vtfs_write(struct file* filp, const char __user* buffer, size_t len, loff_t* offset) {
+  struct inode* inode = file_inode(filp);
+  if (!storage_ops->write)
+    return -ENOSYS;
+
+  // Use filp->f_pos as offset if offset parameter is not provided
+  loff_t pos = (offset) ? *offset : filp->f_pos;
+  loff_t old_pos = pos;
+
+  // Validate I/O parameters
+  loff_t new_size;
+  int ret = vtfs_validate_io_params(pos, len, &new_size);
+  if (ret)
+    return ret;
+
+  ssize_t written = storage_ops->write(inode->i_sb, inode->i_ino, buffer, len, &pos);
+  if (written > 0) {
+    if (offset) {
+      *offset = pos;
+    }
+    filp->f_pos = pos;
+
+    // Update inode size
+    loff_t actual_new_size = old_pos + written;
+    vtfs_update_inode_size(inode, actual_new_size);
+  }
+  return written;
 }
 
 module_init(vtfs_init);

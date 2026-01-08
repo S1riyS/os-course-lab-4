@@ -27,8 +27,12 @@ struct dentry* vtfs_mkdir(
 );
 int vtfs_rmdir(struct inode* parent_inode, struct dentry* child_dentry);
 
-// File ops
+// Dir ops
 int vtfs_iterate(struct file* filp, struct dir_context* ctx);
+
+// File ops
+ssize_t vtfs_read(struct file* filp, char __user* buffer, size_t len, loff_t* offset);
+ssize_t vtfs_write(struct file* filp, const char __user* buffer, size_t len, loff_t* offset);
 
 // Mount
 struct dentry* vtfs_mount(
@@ -41,5 +45,9 @@ void vtfs_kill_sb(struct super_block* sb);
 struct inode* vtfs_get_inode(
     struct super_block* sb, const struct inode* dir, umode_t mode, int i_ino
 );
+
+// Helper functions for I/O operations
+int vtfs_validate_io_params(loff_t offset, size_t len, loff_t* new_size_out);
+void vtfs_update_inode_size(struct inode* inode, loff_t new_size);
 
 #endif

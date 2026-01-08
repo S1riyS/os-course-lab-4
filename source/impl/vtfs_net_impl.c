@@ -64,6 +64,20 @@ static int vtfs_net_storage_rmdir(struct super_block* sb, vtfs_ino_t parent, con
   return -ENOSYS;
 }
 
+static ssize_t vtfs_net_storage_read(
+    struct super_block* sb, vtfs_ino_t ino, char* buffer, size_t len, loff_t* offset
+) {
+  // TODO: implement
+  return -ENOSYS;
+}
+
+static ssize_t vtfs_net_storage_write(
+    struct super_block* sb, vtfs_ino_t ino, const char* buffer, size_t len, loff_t* offset
+) {
+  // TODO: implement
+  return -ENOSYS;
+}
+
 // Ops struct
 static const struct vtfs_storage_ops net_storage_ops = {
     .init = vtfs_net_storage_init,
@@ -75,6 +89,8 @@ static const struct vtfs_storage_ops net_storage_ops = {
     .unlink = vtfs_net_storage_unlink,
     .mkdir = vtfs_net_storage_create_dir,
     .rmdir = vtfs_net_storage_rmdir,
+    .read = vtfs_net_storage_read,
+    .write = vtfs_net_storage_write,
 };
 
 const struct vtfs_storage_ops* vtfs_get_net_storage_ops(void) {
