@@ -22,6 +22,10 @@ int vtfs_create(
     bool b
 );
 int vtfs_unlink(struct inode* parent_inode, struct dentry* child_dentry);
+struct dentry* vtfs_mkdir(
+    struct mnt_idmap* idmap, struct inode* parent_inode, struct dentry* child_dentry, umode_t mode
+);
+int vtfs_rmdir(struct inode* parent_inode, struct dentry* child_dentry);
 
 // File ops
 int vtfs_iterate(struct file* filp, struct dir_context* ctx);

@@ -48,6 +48,22 @@ static int vtfs_net_storage_unlink(struct super_block* sb, vtfs_ino_t parent, co
   return -ENOSYS;
 }
 
+static int vtfs_net_storage_create_dir(
+    struct super_block* sb,
+    vtfs_ino_t parent,
+    const char* name,
+    umode_t mode,
+    struct vtfs_node_meta* out
+) {
+  // TODO: implement
+  return -ENOSYS;
+}
+
+static int vtfs_net_storage_rmdir(struct super_block* sb, vtfs_ino_t parent, const char* name) {
+  // TODO: implement
+  return -ENOSYS;
+}
+
 // Ops struct
 static const struct vtfs_storage_ops net_storage_ops = {
     .init = vtfs_net_storage_init,
@@ -57,6 +73,8 @@ static const struct vtfs_storage_ops net_storage_ops = {
     .iterate_dir = vtfs_net_storage_iterate_dir,
     .create_file = vtfs_net_storage_create_file,
     .unlink = vtfs_net_storage_unlink,
+    .mkdir = vtfs_net_storage_create_dir,
+    .rmdir = vtfs_net_storage_rmdir,
 };
 
 const struct vtfs_storage_ops* vtfs_get_net_storage_ops(void) {

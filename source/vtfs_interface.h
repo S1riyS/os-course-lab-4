@@ -45,6 +45,14 @@ struct vtfs_storage_ops {
       struct vtfs_node_meta* out
   );
   int (*unlink)(struct super_block* sb, vtfs_ino_t parent, const char* name);
+  int (*mkdir)(
+      struct super_block* sb,
+      vtfs_ino_t parent,
+      const char* name,
+      umode_t mode,
+      struct vtfs_node_meta* out
+  );
+  int (*rmdir)(struct super_block* sb, vtfs_ino_t parent, const char* name);
 };
 
 // Implementation getters
