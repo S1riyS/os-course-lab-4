@@ -27,6 +27,7 @@ struct inode_operations vtfs_inode_ops = {
     .unlink = vtfs_unlink,
     .mkdir = vtfs_mkdir,
     .rmdir = vtfs_rmdir,
+    .link = vtfs_link,
 };
 
 struct file_operations vtfs_dir_ops = {
@@ -157,9 +158,16 @@ struct dentry* vtfs_lookup(
     if (inode) {
       inode->i_size = meta.size;
       if (meta.type == VTFS_NODE_DIR) {
+        set_nlink(inode, 2);  // Directories have 2 links: one for itself, one for "."
         inode->i_op = &vtfs_inode_ops;
         inode->i_fop = &vtfs_dir_ops;
       } else {
+        if (storage_ops->_count_links) {
+          unsigned int link_count = storage_ops->_count_links(parent_inode->i_sb, meta.ino);
+          set_nlink(inode, link_count);
+        } else {
+          set_nlink(inode, 1);
+        }
         inode->i_op = &vtfs_inode_ops;
         inode->i_fop = &vtfs_file_ops;
       }
@@ -240,7 +248,15 @@ int vtfs_create(
 }
 
 int vtfs_unlink(struct inode* parent_inode, struct dentry* child_dentry) {
-  return storage_ops->unlink(parent_inode->i_sb, parent_inode->i_ino, child_dentry->d_name.name);
+  struct inode* target_inode = d_inode(child_dentry);
+  int ret = storage_ops->unlink(parent_inode->i_sb, parent_inode->i_ino, child_dentry->d_name.name);
+
+  if (ret == 0 && target_inode) {
+    // Decrement link count
+    drop_nlink(target_inode);
+  }
+
+  return ret;
 }
 
 struct dentry* vtfs_mkdir(
@@ -267,6 +283,35 @@ struct dentry* vtfs_mkdir(
 
 int vtfs_rmdir(struct inode* parent_inode, struct dentry* child_dentry) {
   return storage_ops->rmdir(parent_inode->i_sb, parent_inode->i_ino, child_dentry->d_name.name);
+}
+
+int vtfs_link(struct dentry* old_dentry, struct inode* parent_dir, struct dentry* new_dentry) {
+  struct inode* target_inode = d_inode(old_dentry);
+
+  // Check if target inode exists
+  if (!target_inode) {
+    return -ENOENT;
+  }
+
+  // Hard links are only supported for regular files, not directories
+  if (S_ISDIR(target_inode->i_mode))
+    return -EPERM;
+
+  if (!storage_ops->link)
+    return -ENOSYS;
+
+  int ret = storage_ops->link(
+      parent_dir->i_sb, target_inode->i_ino, parent_dir->i_ino, new_dentry->d_name.name
+  );
+
+  if (ret == 0) {
+    // Increment link count
+    inc_nlink(target_inode);
+    // Associate the new dentry with the existing inode
+    d_instantiate(new_dentry, igrab(target_inode));
+  }
+
+  return ret;
 }
 
 // Helper function to validate I/O parameters

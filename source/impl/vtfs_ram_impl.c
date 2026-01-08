@@ -6,12 +6,18 @@
 #include "../vtfs.h"
 #include "../vtfs_interface.h"
 
-struct vtfs_ram_node {
+struct vtfs_ram_inode_payload {
   struct vtfs_node_meta meta;
+  char* data;
+  size_t capacity;
+  unsigned int ref_count;
+};
+
+struct vtfs_ram_node {
   char name[NAME_MAX + 1];
   struct vtfs_ram_node* next;
-  char* data;            // File data (only for files)
-  size_t data_capacity;  // Allocated capacity
+  vtfs_ino_t parent_ino;
+  struct vtfs_ram_inode_payload* payload;
 };
 
 struct vtfs_ram_storage {
@@ -27,11 +33,20 @@ static struct vtfs_ram_node* find_node_by_ino(struct vtfs_ram_storage* storage, 
   struct vtfs_ram_node* cur = storage->nodes_head;
 
   while (cur) {
-    if (cur->meta.ino == ino)
+    if (cur->payload && cur->payload->meta.ino == ino)
       return cur;
     cur = cur->next;
   }
 
+  return NULL;
+}
+
+static struct vtfs_ram_inode_payload* find_payload_by_ino(
+    struct vtfs_ram_storage* storage, vtfs_ino_t ino
+) {
+  struct vtfs_ram_node* node = find_node_by_ino(storage, ino);
+  if (node && node->payload)
+    return node->payload;
   return NULL;
 }
 
@@ -41,12 +56,49 @@ static struct vtfs_ram_node* find_child(
   struct vtfs_ram_node* cur = storage->nodes_head;
 
   while (cur) {
-    if (cur->meta.parent_ino == parent && !strcmp(cur->name, name))
+    if (cur->parent_ino == parent && !strcmp(cur->name, name))
       return cur;
     cur = cur->next;
   }
 
   return NULL;
+}
+
+static unsigned int count_links_to_ino(struct vtfs_ram_storage* storage, vtfs_ino_t ino) {
+  struct vtfs_ram_inode_payload* payload = find_payload_by_ino(storage, ino);
+  if (payload)
+    return payload->ref_count;
+  return 0;
+}
+
+static struct vtfs_ram_inode_payload* alloc_payload(void) {
+  struct vtfs_ram_inode_payload* payload = kzalloc(sizeof(*payload), GFP_KERNEL);
+  if (payload) {
+    payload->ref_count = 1;
+    payload->data = NULL;
+    payload->capacity = 0;
+  }
+  return payload;
+}
+
+// Increment reference count for payload
+static void payload_get(struct vtfs_ram_inode_payload* payload) {
+  if (payload)
+    payload->ref_count++;
+}
+
+// Decrement reference count and free if zero
+static void payload_put(struct vtfs_ram_inode_payload* payload) {
+  if (!payload)
+    return;
+
+  payload->ref_count--;
+  if (payload->ref_count == 0) {
+    if (payload->data) {
+      kfree(payload->data);
+    }
+    kfree(payload);
+  }
 }
 
 static struct vtfs_ram_node* alloc_node(struct vtfs_ram_storage* storage) {
@@ -63,8 +115,8 @@ static void free_all_nodes(struct vtfs_ram_storage* storage) {
   struct vtfs_ram_node* cur = storage->nodes_head;
   while (cur) {
     struct vtfs_ram_node* next = cur->next;
-    if (cur->data) {
-      kfree(cur->data);
+    if (cur->payload) {
+      payload_put(cur->payload);
     }
     kfree(cur);
     cur = next;
@@ -87,14 +139,22 @@ int vtfs_ram_storage_init(struct super_block* sb, const char* token) {
     return -ENOMEM;
   }
 
-  root->meta.ino = VTFS_ROOT_INO;
-  root->meta.parent_ino = 0;
-  root->meta.type = VTFS_NODE_DIR;
-  root->meta.mode = S_IFDIR | 0777;
-  root->meta.size = 0;
+  struct vtfs_ram_inode_payload* root_payload = alloc_payload();
+  if (!root_payload) {
+    kfree(root);
+    kfree(storage);
+    return -ENOMEM;
+  }
+
+  root_payload->meta.ino = VTFS_ROOT_INO;
+  root_payload->meta.parent_ino = 0;
+  root_payload->meta.type = VTFS_NODE_DIR;
+  root_payload->meta.mode = S_IFDIR | 0777;
+  root_payload->meta.size = 0;
+
+  root->parent_ino = 0;
   root->name[0] = '\0';
-  root->data = NULL;
-  root->data_capacity = 0;
+  root->payload = root_payload;
 
   sb->s_fs_info = storage;
   return 0;
@@ -116,10 +176,10 @@ int vtfs_ram_storage_get_root(struct super_block* sb, struct vtfs_node_meta* out
     return -EINVAL;
 
   struct vtfs_ram_node* root = find_node_by_ino(storage, VTFS_ROOT_INO);
-  if (!root)
+  if (!root || !root->payload)
     return -ENOENT;
 
-  *out = root->meta;
+  *out = root->payload->meta;
   return 0;
 }
 
@@ -131,10 +191,10 @@ int vtfs_ram_storage_lookup(
     return -EINVAL;
 
   struct vtfs_ram_node* node = find_child(storage, parent, name);
-  if (!node)
+  if (!node || !node->payload)
     return -ENOENT;
 
-  *out = node->meta;
+  *out = node->payload->meta;
   return 0;
 }
 
@@ -149,12 +209,12 @@ int vtfs_ram_storage_iterate_dir(
   struct vtfs_ram_node* cur = storage->nodes_head;
 
   while (cur) {
-    if (cur->meta.parent_ino == dir_ino) {
+    if (cur->parent_ino == dir_ino && cur->payload) {
       if (count == *offset) {
         strncpy(out->name, cur->name, NAME_MAX);
         out->name[NAME_MAX] = '\0';
-        out->ino = cur->meta.ino;
-        out->type = cur->meta.type;
+        out->ino = cur->payload->meta.ino;
+        out->type = cur->payload->meta.type;
 
         (*offset)++;
         return 0;
@@ -182,25 +242,31 @@ int vtfs_ram_storage_create_file(
     return -EEXIST;
 
   struct vtfs_ram_node* parent_node = find_node_by_ino(storage, parent);
-  if (!parent_node || parent_node->meta.type != VTFS_NODE_DIR)
+  if (!parent_node || !parent_node->payload || parent_node->payload->meta.type != VTFS_NODE_DIR)
     return -ENOTDIR;
 
-  struct vtfs_ram_node* node = alloc_node(storage);
-  if (!node)
+  struct vtfs_ram_inode_payload* payload = alloc_payload();
+  if (!payload)
     return -ENOMEM;
 
-  node->meta.ino = storage->next_ino++;
-  node->meta.parent_ino = parent;
-  node->meta.type = VTFS_NODE_FILE;
-  node->meta.mode = S_IFREG | (mode & 0777);
-  node->meta.size = 0;
+  struct vtfs_ram_node* node = alloc_node(storage);
+  if (!node) {
+    payload_put(payload);
+    return -ENOMEM;
+  }
 
+  payload->meta.ino = storage->next_ino++;
+  payload->meta.parent_ino = parent;
+  payload->meta.type = VTFS_NODE_FILE;
+  payload->meta.mode = S_IFREG | (mode & 0777);
+  payload->meta.size = 0;
+
+  node->parent_ino = parent;
   strncpy(node->name, name, NAME_MAX);
   node->name[NAME_MAX] = '\0';
-  node->data = NULL;
-  node->data_capacity = 0;
+  node->payload = payload;
 
-  *out = node->meta;
+  *out = payload->meta;
   return 0;
 }
 
@@ -213,18 +279,21 @@ int vtfs_ram_storage_unlink(struct super_block* sb, vtfs_ino_t parent, const cha
   struct vtfs_ram_node* cur = storage->nodes_head;
 
   while (cur) {
-    if (cur->meta.parent_ino == parent && !strcmp(cur->name, name)) {
-      if (cur->meta.type != VTFS_NODE_FILE)
+    if (cur->parent_ino == parent && !strcmp(cur->name, name)) {
+      if (!cur->payload || cur->payload->meta.type != VTFS_NODE_FILE)
         return -EPERM;
 
+      struct vtfs_ram_inode_payload* payload = cur->payload;
+
+      // Remove the node from the list
       if (prev)
         prev->next = cur->next;
       else
         storage->nodes_head = cur->next;
 
-      if (cur->data) {
-        kfree(cur->data);
-      }
+      // Decrement reference count
+      payload_put(payload);
+
       kfree(cur);
       return 0;
     }
@@ -250,23 +319,31 @@ int vtfs_ram_storage_mkdir(
     return -EEXIST;
 
   struct vtfs_ram_node* parent_node = find_node_by_ino(storage, parent);
-  if (!parent_node || parent_node->meta.type != VTFS_NODE_DIR)
+  if (!parent_node || !parent_node->payload || parent_node->payload->meta.type != VTFS_NODE_DIR)
     return -ENOTDIR;
 
-  struct vtfs_ram_node* node = alloc_node(storage);
-  if (!node)
+  struct vtfs_ram_inode_payload* payload = alloc_payload();
+  if (!payload)
     return -ENOMEM;
 
-  node->meta.ino = storage->next_ino++;
-  node->meta.parent_ino = parent;
-  node->meta.type = VTFS_NODE_DIR;
-  node->meta.mode = S_IFDIR | (mode & 0777);
-  node->meta.size = 0;
+  struct vtfs_ram_node* node = alloc_node(storage);
+  if (!node) {
+    payload_put(payload);
+    return -ENOMEM;
+  }
 
+  payload->meta.ino = storage->next_ino++;
+  payload->meta.parent_ino = parent;
+  payload->meta.type = VTFS_NODE_DIR;
+  payload->meta.mode = S_IFDIR | (mode & 0777);
+  payload->meta.size = 0;
+
+  node->parent_ino = parent;
   strncpy(node->name, name, NAME_MAX);
   node->name[NAME_MAX] = '\0';
+  node->payload = payload;
 
-  *out = node->meta;
+  *out = payload->meta;
   return 0;
 }
 
@@ -276,16 +353,16 @@ int vtfs_ram_storage_rmdir(struct super_block* sb, vtfs_ino_t parent, const char
     return -EINVAL;
 
   struct vtfs_ram_node* dir_node = find_child(storage, parent, name);
-  if (!dir_node)
+  if (!dir_node || !dir_node->payload)
     return -ENOENT;
 
-  if (dir_node->meta.type != VTFS_NODE_DIR)
+  if (dir_node->payload->meta.type != VTFS_NODE_DIR)
     return -ENOTDIR;
 
   // Check that directory is empty
   struct vtfs_ram_node* cur = storage->nodes_head;
   while (cur) {
-    if (cur->meta.parent_ino == dir_node->meta.ino)
+    if (cur->parent_ino == dir_node->payload->meta.ino)
       return -ENOTEMPTY;
     cur = cur->next;
   }
@@ -299,6 +376,7 @@ int vtfs_ram_storage_rmdir(struct super_block* sb, vtfs_ino_t parent, const char
         prev->next = cur->next;
       else
         storage->nodes_head = cur->next;
+      payload_put(cur->payload);
       kfree(cur);
       return 0;
     }
@@ -316,29 +394,29 @@ ssize_t vtfs_ram_storage_read(
   if (!storage)
     return -EINVAL;
 
-  struct vtfs_ram_node* node = find_node_by_ino(storage, ino);
-  if (!node)
+  struct vtfs_ram_inode_payload* payload = find_payload_by_ino(storage, ino);
+  if (!payload)
     return -ENOENT;
 
-  if (node->meta.type != VTFS_NODE_FILE)
+  if (payload->meta.type != VTFS_NODE_FILE)
     return -EISDIR;
 
   int ret = vtfs_validate_io_params(*offset, len, NULL);
   if (ret)
     return ret;
 
-  if (*offset >= node->meta.size)
+  if (*offset >= payload->meta.size)
     return 0;  // EOF
 
   // Calculate how much we can read
-  size_t available = node->meta.size - *offset;
+  size_t available = payload->meta.size - *offset;
   size_t to_read = (len < available) ? len : available;
 
   if (to_read == 0)
     return 0;
 
   // Copy data from kernel space to user space
-  if (copy_to_user(buffer, node->data + *offset, to_read))
+  if (copy_to_user(buffer, payload->data + *offset, to_read))
     return -EFAULT;
 
   *offset += to_read;
@@ -352,11 +430,11 @@ ssize_t vtfs_ram_storage_write(
   if (!storage)
     return -EINVAL;
 
-  struct vtfs_ram_node* node = find_node_by_ino(storage, ino);
-  if (!node)
+  struct vtfs_ram_inode_payload* payload = find_payload_by_ino(storage, ino);
+  if (!payload)
     return -ENOENT;
 
-  if (node->meta.type != VTFS_NODE_FILE)
+  if (payload->meta.type != VTFS_NODE_FILE)
     return -EISDIR;
 
   loff_t new_size;
@@ -365,35 +443,79 @@ ssize_t vtfs_ram_storage_write(
     return ret;
 
   // Allocate or reallocate data buffer if needed
-  if (new_size > node->data_capacity) {
+  if (new_size > payload->capacity) {
     size_t new_capacity = new_size * 2;
     if (new_capacity < 1024)
       new_capacity = 1024;  // Minimum 1KB
 
-    char* new_data = krealloc(node->data, new_capacity, GFP_KERNEL);
+    char* new_data = krealloc(payload->data, new_capacity, GFP_KERNEL);
     if (!new_data)
       return -ENOMEM;
 
-    if (node->data_capacity > 0) {
-      memset(new_data + node->data_capacity, 0, new_capacity - node->data_capacity);
+    if (payload->capacity > 0) {
+      memset(new_data + payload->capacity, 0, new_capacity - payload->capacity);
     } else {
       memset(new_data, 0, new_capacity);
     }
 
-    node->data = new_data;
-    node->data_capacity = new_capacity;
+    payload->data = new_data;
+    payload->capacity = new_capacity;
   }
 
   // Copy data from user space to kernel space
-  if (copy_from_user(node->data + *offset, buffer, len))
+  if (copy_from_user(payload->data + *offset, buffer, len))
     return -EFAULT;
 
-  if (new_size > node->meta.size) {
-    node->meta.size = new_size;
+  if (new_size > payload->meta.size) {
+    payload->meta.size = new_size;
   }
 
   *offset += len;
   return len;
+}
+
+int vtfs_ram_storage_link(
+    struct super_block* sb, vtfs_ino_t target_ino, vtfs_ino_t parent, const char* name
+) {
+  struct vtfs_ram_storage* storage = get_storage(sb);
+  if (!storage)
+    return -EINVAL;
+
+  struct vtfs_ram_node* target_node = find_node_by_ino(storage, target_ino);
+  if (!target_node || !target_node->payload)
+    return -ENOENT;
+
+  if (target_node->payload->meta.type != VTFS_NODE_FILE)
+    return -EPERM;  // Hard links only for files
+
+  struct vtfs_ram_node* parent_node = find_node_by_ino(storage, parent);
+  if (!parent_node || !parent_node->payload || parent_node->payload->meta.type != VTFS_NODE_DIR)
+    return -ENOTDIR;
+
+  if (find_child(storage, parent, name))
+    return -EEXIST;
+
+  struct vtfs_ram_node* node = alloc_node(storage);
+  if (!node)
+    return -ENOMEM;
+
+  // Increment reference count
+  payload_get(target_node->payload);
+
+  node->parent_ino = parent;
+  strncpy(node->name, name, NAME_MAX);
+  node->name[NAME_MAX] = '\0';
+  node->payload = target_node->payload;  // Share the same payload
+
+  return 0;
+}
+
+unsigned int vtfs_ram_storage_count_links(struct super_block* sb, vtfs_ino_t ino) {
+  struct vtfs_ram_storage* storage = get_storage(sb);
+  if (!storage)
+    return 0;
+
+  return count_links_to_ino(storage, ino);
 }
 
 // Ops struct
@@ -409,6 +531,8 @@ static const struct vtfs_storage_ops ram_storage_ops = {
     .rmdir = vtfs_ram_storage_rmdir,
     .read = vtfs_ram_storage_read,
     .write = vtfs_ram_storage_write,
+    .link = vtfs_ram_storage_link,
+    ._count_links = vtfs_ram_storage_count_links,
 };
 
 const struct vtfs_storage_ops* vtfs_get_ram_storage_ops(void) {

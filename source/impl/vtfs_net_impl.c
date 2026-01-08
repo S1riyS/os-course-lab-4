@@ -78,6 +78,18 @@ static ssize_t vtfs_net_storage_write(
   return -ENOSYS;
 }
 
+static int vtfs_net_storage_link(
+    struct super_block* sb, vtfs_ino_t target_ino, vtfs_ino_t parent, const char* name
+) {
+  // TODO: implement
+  return -ENOSYS;
+}
+
+static unsigned int vtfs_net_storage_count_links(struct super_block* sb, vtfs_ino_t ino) {
+  // TODO: implement
+  return 1;
+}
+
 // Ops struct
 static const struct vtfs_storage_ops net_storage_ops = {
     .init = vtfs_net_storage_init,
@@ -91,6 +103,8 @@ static const struct vtfs_storage_ops net_storage_ops = {
     .rmdir = vtfs_net_storage_rmdir,
     .read = vtfs_net_storage_read,
     .write = vtfs_net_storage_write,
+    .link = vtfs_net_storage_link,
+    ._count_links = vtfs_net_storage_count_links,
 };
 
 const struct vtfs_storage_ops* vtfs_get_net_storage_ops(void) {

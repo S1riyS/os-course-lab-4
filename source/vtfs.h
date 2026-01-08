@@ -26,6 +26,9 @@ struct dentry* vtfs_mkdir(
     struct mnt_idmap* idmap, struct inode* parent_inode, struct dentry* child_dentry, umode_t mode
 );
 int vtfs_rmdir(struct inode* parent_inode, struct dentry* child_dentry);
+int vtfs_link(
+    struct dentry* old_dentry, struct inode* parent_dir, struct dentry* new_dentry
+);
 
 // Dir ops
 int vtfs_iterate(struct file* filp, struct dir_context* ctx);

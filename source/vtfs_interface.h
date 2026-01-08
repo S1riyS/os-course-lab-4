@@ -53,12 +53,12 @@ struct vtfs_storage_ops {
       struct vtfs_node_meta* out
   );
   int (*rmdir)(struct super_block* sb, vtfs_ino_t parent, const char* name);
-  ssize_t (*read)(
-      struct super_block* sb, vtfs_ino_t ino, char* buffer, size_t len, loff_t* offset
-  );
+  ssize_t (*read)(struct super_block* sb, vtfs_ino_t ino, char* buffer, size_t len, loff_t* offset);
   ssize_t (*write)(
       struct super_block* sb, vtfs_ino_t ino, const char* buffer, size_t len, loff_t* offset
   );
+  int (*link)(struct super_block* sb, vtfs_ino_t target_ino, vtfs_ino_t parent, const char* name);
+  unsigned int (*_count_links)(struct super_block* sb, vtfs_ino_t ino);
 };
 
 // Implementation getters
