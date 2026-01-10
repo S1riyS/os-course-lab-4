@@ -1,7 +1,19 @@
 #include "http.h"
 
-const char *SERVER_IP = "0.0.0.0";
-const int SERVER_PORT = 8080;
+#include <linux/net.h>
+#include <linux/socket.h>
+#include <linux/uio.h>
+#include <linux/in.h>
+#include <linux/kernel.h>
+#include <linux/slab.h>
+#include <linux/string.h>
+#include <linux/errno.h>
+#include <linux/printk.h>
+#include <linux/init.h>
+#include <linux/netdevice.h>
+
+const char *SERVER_IP = "127.0.0.1"; // localhost
+const int SERVER_PORT = 8888;
 
 // callee should call free_request on received buffer
 int fill_request(struct kvec *vec, const char *token, const char *method,
