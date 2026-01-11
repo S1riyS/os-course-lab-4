@@ -72,7 +72,7 @@ int receive_all(struct socket *sock, char *buffer, size_t buffer_size) {
 }
 
 int64_t parse_http_response(char *raw_response, size_t raw_response_size,
-                            char *response, size_t response_size) {
+                            char *response, size_t response_size, size_t *data_len) {
   char *buffer = raw_response;
 
   // Read Response Line
@@ -136,12 +136,16 @@ int64_t parse_http_response(char *raw_response, size_t raw_response_size,
   buffer += sizeof(int64_t);
   memcpy(response, buffer, length);
 
+  if (data_len) {
+    *data_len = length;
+  }
+
   return return_value;
 }
 
 int64_t vtfs_http_call(const char *token, const char *method,
                             char *response_buffer, size_t buffer_size,
-                            size_t arg_size, ...) {
+                            size_t *data_len, size_t arg_size, ...) {
   struct socket *sock;
   int64_t error;
 
@@ -203,8 +207,13 @@ int64_t vtfs_http_call(const char *token, const char *method,
     return -4;
   }
 
+  size_t actual_data_length = 0;
   error = parse_http_response(raw_response_buffer, read_bytes, response_buffer,
-                              buffer_size);
+                              buffer_size, &actual_data_length);
+
+  if (data_len) {
+    *data_len = actual_data_length;
+  }
 
   kfree(raw_response_buffer);
   return error;
