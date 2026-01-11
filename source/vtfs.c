@@ -6,7 +6,6 @@
 #include <linux/module.h>
 #include <linux/printk.h>
 #include <linux/string.h>
-#include <linux/uaccess.h>
 
 #include "vtfs_interface.h"
 
@@ -101,17 +100,26 @@ int vtfs_fill_super(struct super_block* sb, void* data, int silent) {
     return ret;
   }
 
+  printk(KERN_INFO "[vtfs] Root meta: ino=%llu, parent_ino=%llu, type=%d, mode=0%o, size=%lld\n",
+      (unsigned long long)root_meta.ino, (unsigned long long)root_meta.parent_ino,
+      (int)root_meta.type, root_meta.mode, (long long)root_meta.size);
+
   struct inode* inode = vtfs_get_inode(sb, NULL, root_meta.mode, root_meta.ino);
   if (!inode) {
+    printk(KERN_ERR "[vtfs] Failed to create root inode\n");
     storage_ops->shutdown(sb);
     return -ENOMEM;
   }
 
+  inode->i_size = root_meta.size;
+  set_nlink(inode, 2);  // Directories have 2 links: one for itself, one for "."
   inode->i_op = &vtfs_inode_ops;
   inode->i_fop = &vtfs_dir_ops;
 
+  printk(KERN_INFO "[vtfs] Created root inode, calling d_make_root\n");
   sb->s_root = d_make_root(inode);
   if (sb->s_root == NULL) {
+    printk(KERN_ERR "[vtfs] Failed to create root dentry\n");
     iput(inode);
     storage_ops->shutdown(sb);
     return -ENOMEM;
@@ -127,9 +135,9 @@ struct inode* vtfs_get_inode(
   struct inode* inode = new_inode(sb);
   if (inode != NULL) {
     inode_init_owner(&nop_mnt_idmap, inode, dir, mode);
-    inode->i_mode = mode | 0777;
+    inode->i_mode = mode;
+    inode->i_ino = i_ino;
   }
-  inode->i_ino = i_ino;
   return inode;
 }
 
@@ -147,14 +155,7 @@ struct dentry* vtfs_lookup(
   );
 
   if (ret == 0) {
-    umode_t mode = meta.mode;
-    if (meta.type == VTFS_NODE_DIR) {
-      mode |= S_IFDIR;
-    } else {
-      mode |= S_IFREG;
-    }
-
-    struct inode* inode = vtfs_get_inode(parent_inode->i_sb, NULL, mode, meta.ino);
+    struct inode* inode = vtfs_get_inode(parent_inode->i_sb, NULL, meta.mode, meta.ino);
     if (inode) {
       inode->i_size = meta.size;
       if (meta.type == VTFS_NODE_DIR) {
@@ -240,6 +241,12 @@ int vtfs_create(
     return -ENOMEM;
 
   inode->i_size = meta.size;
+  if (storage_ops->_count_links) {
+    unsigned int link_count = storage_ops->_count_links(parent_inode->i_sb, meta.ino);
+    set_nlink(inode, link_count);
+  } else {
+    set_nlink(inode, 1);
+  }
   inode->i_op = &vtfs_inode_ops;
   inode->i_fop = &vtfs_file_ops;
 
@@ -274,6 +281,8 @@ struct dentry* vtfs_mkdir(
   if (!inode)
     return ERR_PTR(-ENOMEM);
 
+  inode->i_size = meta.size;
+  set_nlink(inode, 2);  // Directories have 2 links: one for itself, one for "."
   inode->i_op = &vtfs_inode_ops;
   inode->i_fop = &vtfs_dir_ops;
 
@@ -305,8 +314,12 @@ int vtfs_link(struct dentry* old_dentry, struct inode* parent_dir, struct dentry
   );
 
   if (ret == 0) {
-    // Increment link count
-    inc_nlink(target_inode);
+    if (storage_ops->_count_links) {
+      unsigned int link_count = storage_ops->_count_links(parent_dir->i_sb, target_inode->i_ino);
+      set_nlink(target_inode, link_count);
+    } else {
+      inc_nlink(target_inode);
+    }
     // Associate the new dentry with the existing inode
     d_instantiate(new_dentry, igrab(target_inode));
   }
