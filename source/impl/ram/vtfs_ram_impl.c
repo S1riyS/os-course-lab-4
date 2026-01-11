@@ -3,8 +3,8 @@
 #include <linux/string.h>
 #include <linux/uaccess.h>
 
-#include "../vtfs.h"
-#include "../vtfs_interface.h"
+#include "../../vtfs.h"
+#include "../../vtfs_interface.h"
 
 struct vtfs_ram_inode_payload {
   struct vtfs_node_meta meta;
