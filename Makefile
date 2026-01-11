@@ -1,6 +1,12 @@
 obj-m += vtfs.o
 
-vtfs-objs := source/vtfs.o source/impl/vtfs_ram_impl.o source/impl/vtfs_net_impl.o
+vtfs-objs := \
+    source/vtfs.o \
+    source/http.o \
+    source/impl/ram/vtfs_ram_impl.o \
+    source/impl/net/vtfs_net_impl.o \
+    source/impl/net/decode.o \
+    source/impl/net/base64.o \
 
 PWD := $(CURDIR) 
 KDIR = /lib/modules/`uname -r`/build
