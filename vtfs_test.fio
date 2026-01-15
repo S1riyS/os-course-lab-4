@@ -1,0 +1,53 @@
+
+[global]
+ioengine=sync
+size=1M
+runtime=10s
+time_based
+group_reporting
+directory=/mnt/vt
+stonewall
+fsync=0
+end_fsync=0
+create_on_open=1
+
+[sequential-read]
+description=Последовательное чтение большими блоками
+rw=read
+bs=1M
+filename=seq_read_test
+numjobs=1
+# Измеряем задержки
+latency_target=10
+latency_window=1000
+latency_percentile=99.0
+
+[sequential-write]
+description=Последовательная запись большими блоками
+rw=write
+bs=1M
+filename=seq_write_test
+numjobs=1
+
+[random-read]
+description=Случайное чтение маленькими блоками (типичный паттерн для БД)
+rw=randread
+bs=4k
+filename=rand_read_test
+numjobs=1
+
+
+[random-write]
+description=Случайная запись маленькими блоками
+rw=randwrite
+bs=4k
+filename=rand_write_test
+numjobs=1
+
+[mixed-workload]
+description=Смешанная нагрузка: 70% чтение, 30% запись
+rw=randrw
+rwmixread=70
+bs=4k
+filename=mixed_test
+numjobs=1
