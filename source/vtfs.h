@@ -36,6 +36,7 @@ int vtfs_iterate(struct file* filp, struct dir_context* ctx);
 // File ops
 ssize_t vtfs_read(struct file* filp, char __user* buffer, size_t len, loff_t* offset);
 ssize_t vtfs_write(struct file* filp, const char __user* buffer, size_t len, loff_t* offset);
+loff_t vtfs_llseek(struct file *filp, loff_t offset, int whence);
 
 // Mount
 struct dentry* vtfs_mount(

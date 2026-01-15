@@ -36,6 +36,7 @@ struct file_operations vtfs_dir_ops = {
 struct file_operations vtfs_file_ops = {
     .read = vtfs_read,
     .write = vtfs_write,
+    .llseek = vtfs_llseek,
 };
 
 static int __init vtfs_init(void) {
@@ -392,6 +393,31 @@ ssize_t vtfs_write(struct file* filp, const char __user* buffer, size_t len, lof
     vtfs_update_inode_size(inode, actual_new_size);
   }
   return written;
+}
+
+loff_t vtfs_llseek(struct file *filp, loff_t offset, int whence) {
+  struct inode *inode = file_inode(filp);
+  loff_t newpos;
+
+  switch (whence) {
+  case SEEK_SET:
+      newpos = offset;
+      break;
+  case SEEK_CUR:
+      newpos = filp->f_pos + offset;
+      break;
+  case SEEK_END:
+      newpos = inode->i_size + offset;
+      break;
+  default:
+      return -EINVAL;
+  }
+
+  if (newpos < 0)
+      return -EINVAL;
+
+  filp->f_pos = newpos;
+  return newpos;
 }
 
 module_init(vtfs_init);
