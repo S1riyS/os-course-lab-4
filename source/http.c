@@ -18,8 +18,7 @@ const int SERVER_PORT = 8888;
 // callee should call free_request on received buffer
 int fill_request(struct kvec *vec, const char *token, const char *method,
                  size_t arg_size, va_list args) {
-  // 2048 bytes for URL and 64 bytes for anything else
-  char *request_buffer = kzalloc(2048 + 64, GFP_KERNEL);
+  char *request_buffer = kzalloc(32 * 1024 + 64, GFP_KERNEL);
   if (request_buffer == 0) {
     return -ENOMEM;
   }
