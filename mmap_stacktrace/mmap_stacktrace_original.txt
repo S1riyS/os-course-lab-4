@@ -1,0 +1,1306 @@
+# tracer: function_graph
+#
+# CPU  DURATION                  FUNCTION CALLS
+# |     |   |                     |   |   |   |
+ 1)               |  __arm64_sys_mmap() {
+ 1)               |    ksys_mmap_pgoff() {
+ 1)               |      vm_mmap_pgoff() {
+ 1)               |        security_mmap_file() {
+ 1)   0.500 us    |          apparmor_mmap_file();
+ 1)   0.167 us    |          ima_file_mmap();
+ 1)   1.458 us    |        }
+ 1)               |        down_write_killable() {
+ 1)   0.125 us    |          dynamic_might_resched();
+ 1)   0.458 us    |        }
+ 1)               |        do_mmap() {
+ 1)               |          __get_unmapped_area() {
+ 1)               |            mm_get_unmapped_area_vmflags() {
+ 1)               |              generic_get_unmapped_area_topdown() {
+ 1)               |                vm_unmapped_area() {
+ 1)   0.417 us    |                  unmapped_area_topdown();
+ 1)   0.750 us    |                }
+ 1)   1.083 us    |              }
+ 1)   1.375 us    |            }
+ 1)               |            security_mmap_addr() {
+ 1)   0.125 us    |              cap_mmap_addr();
+ 1)   0.458 us    |            }
+ 1)   2.334 us    |          }
+ 1)               |          mmap_region() {
+ 1)               |            __mmap_region() {
+ 1)   0.166 us    |              vm_get_page_prot();
+ 1)   0.125 us    |              may_expand_vm();
+ 1)               |              security_vm_enough_memory_mm() {
+ 1)               |                cap_vm_enough_memory() {
+ 1)   0.125 us    |                  cap_capable();
+ 1)   0.458 us    |                }
+ 1)   0.167 us    |                __vm_enough_memory();
+ 1)   1.042 us    |              }
+ 1)   0.167 us    |              ksm_vma_flags();
+ 1)               |              vma_merge_new_range() {
+ 1)   0.167 us    |                can_vma_merge_left.constprop.0();
+ 1)   0.166 us    |                can_vma_merge_right();
+ 1)   0.792 us    |              }
+ 1)               |              __mmap_new_vma() {
+ 1)               |                vm_area_alloc() {
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.167 us    |                    dynamic_might_resched();
+ 1)               |                    __memcg_slab_post_alloc_hook() {
+ 1)               |                      obj_cgroup_charge_account() {
+ 1)   0.125 us    |                        __account_obj_stock();
+ 1)   0.458 us    |                      }
+ 1)   0.125 us    |                      __rcu_read_lock();
+ 1)   0.167 us    |                      __rcu_read_unlock();
+ 1)   1.417 us    |                    }
+ 1)   2.125 us    |                  }
+ 1)   2.458 us    |                }
+ 1)               |                kmem_cache_alloc_noprof() {
+ 1)   0.167 us    |                  dynamic_might_resched();
+ 1)   0.459 us    |                }
+ 1)   0.167 us    |                __vma_start_write();
+ 1)               |                call_rcu() {
+ 1)               |                  __call_rcu_common() {
+ 1)   0.167 us    |                    rcu_segcblist_enqueue();
+ 1)   0.541 us    |                  }
+ 1)   0.791 us    |                }
+ 1)   0.166 us    |                vma_link_file();
+ 1)   5.458 us    |              }
+ 1)   0.167 us    |              perf_event_mmap();
+ 1)   0.166 us    |              vms_complete_munmap_vmas();
+ 1)   0.125 us    |              vm_stat_account();
+ 1)               |              vma_set_page_prot() {
+ 1)   0.125 us    |                vm_get_page_prot();
+ 1)   0.125 us    |                vma_wants_writenotify();
+ 1)   0.750 us    |              }
+ 1) + 10.958 us   |            }
+ 1) + 11.250 us   |          }
+ 1) + 14.125 us   |        }
+ 1)   0.125 us    |        up_write();
+ 1)   0.167 us    |        userfaultfd_unmap_complete();
+ 1) + 17.292 us   |      }
+ 1) + 17.667 us   |    }
+ 1) + 25.333 us   |  }
+ 1)               |  __arm64_sys_mmap() {
+ 1)               |    ksys_mmap_pgoff() {
+ 1)               |      fget() {
+ 1)   0.166 us    |        __rcu_read_lock();
+ 1)   0.125 us    |        __rcu_read_unlock();
+ 1)   0.833 us    |      }
+ 1)               |      vm_mmap_pgoff() {
+ 1)               |        security_mmap_file() {
+ 1)               |          apparmor_mmap_file() {
+ 1)               |            common_file_perm() {
+ 1)               |              aa_file_perm() {
+ 1)   0.166 us    |                __rcu_read_lock();
+ 1)   0.167 us    |                __rcu_read_unlock();
+ 1)   0.708 us    |              }
+ 1)   1.084 us    |            }
+ 1)   1.416 us    |          }
+ 1)               |          ima_file_mmap() {
+ 1)               |            security_current_getlsmprop_subj() {
+ 1)   0.125 us    |              apparmor_current_getlsmprop_subj();
+ 1)   0.458 us    |            }
+ 1)   0.708 us    |          }
+ 1)   2.583 us    |        }
+ 1)               |        down_write_killable() {
+ 1)   0.166 us    |          dynamic_might_resched();
+ 1)   0.458 us    |        }
+ 1)               |        do_mmap() {
+ 1)               |          __get_unmapped_area() {
+ 1)               |            thp_get_unmapped_area() {
+ 1)               |              thp_get_unmapped_area_vmflags() {
+ 1)               |                mm_get_unmapped_area_vmflags() {
+ 1)               |                  generic_get_unmapped_area_topdown() {
+ 1)               |                    vm_unmapped_area() {
+ 1)   0.334 us    |                      unmapped_area_topdown();
+ 1)   0.625 us    |                    }
+ 1)   0.958 us    |                  }
+ 1)   1.250 us    |                }
+ 1)   1.542 us    |              }
+ 1)   1.834 us    |            }
+ 1)               |            security_mmap_addr() {
+ 1)   0.125 us    |              cap_mmap_addr();
+ 1)   0.459 us    |            }
+ 1)   2.750 us    |          }
+ 1)   0.125 us    |          path_noexec();
+ 1)               |          memfd_check_seals_mmap() {
+ 1)   0.166 us    |            shmem_mapping();
+ 1)   0.458 us    |          }
+ 1)               |          mmap_region() {
+ 1)               |            __mmap_region() {
+ 1)   0.167 us    |              vm_get_page_prot();
+ 1)   0.166 us    |              may_expand_vm();
+ 1)               |              ext4_file_mmap_prepare() {
+ 1)               |                touch_atime() {
+ 1)               |                  atime_needs_update() {
+ 1)   0.125 us    |                    make_vfsuid();
+ 1)   0.125 us    |                    make_vfsgid();
+ 1)               |                    current_time() {
+ 1)   0.125 us    |                      ktime_get_coarse_real_ts64_mg();
+ 1)   0.125 us    |                      timestamp_truncate();
+ 1)   0.750 us    |                    }
+ 1)   1.709 us    |                  }
+ 1)   2.000 us    |                }
+ 1)   2.333 us    |              }
+ 1)   0.125 us    |              ksm_vma_flags();
+ 1)               |              vma_merge_new_range() {
+ 1)   0.125 us    |                can_vma_merge_left.constprop.0();
+ 1)   0.125 us    |                can_vma_merge_right();
+ 1)   0.750 us    |              }
+ 1)               |              __mmap_new_vma() {
+ 1)               |                vm_area_alloc() {
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                    dynamic_might_resched();
+ 1)               |                    __memcg_slab_post_alloc_hook() {
+ 1)               |                      obj_cgroup_charge_account() {
+ 1)   0.125 us    |                        __account_obj_stock();
+ 1)   0.459 us    |                      }
+ 1)   0.166 us    |                      __rcu_read_lock();
+ 1)   0.125 us    |                      __rcu_read_unlock();
+ 1)   1.375 us    |                    }
+ 1)   1.958 us    |                  }
+ 1)   2.584 us    |                }
+ 1)               |                kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                  dynamic_might_resched();
+ 1)   0.459 us    |                }
+ 1)   0.167 us    |                __vma_start_write();
+ 1)               |                call_rcu() {
+ 1)               |                  __call_rcu_common() {
+ 1)   0.125 us    |                    rcu_segcblist_enqueue();
+ 1)   0.458 us    |                  }
+ 1)   0.708 us    |                }
+ 1)               |                vma_link_file() {
+ 1)               |                  down_write() {
+ 1)   0.167 us    |                    dynamic_might_resched();
+ 1)   0.417 us    |                  }
+ 1)   0.167 us    |                  vma_interval_tree_insert();
+ 1)   0.166 us    |                  up_write();
+ 1)   1.375 us    |                }
+ 1)               |                khugepaged_enter_vma() {
+ 1)   0.125 us    |                  hugepage_pmd_enabled();
+ 1)   0.167 us    |                  __thp_vma_allowable_orders();
+ 1)   0.791 us    |                }
+ 1)   7.667 us    |              }
+ 1)   0.166 us    |              perf_event_mmap();
+ 1)   0.125 us    |              vms_complete_munmap_vmas();
+ 1)   0.166 us    |              vm_stat_account();
+ 1)   0.167 us    |              uprobe_mmap();
+ 1)               |              vma_set_page_prot() {
+ 1)   0.125 us    |                vm_get_page_prot();
+ 1)   0.167 us    |                vma_wants_writenotify();
+ 1)   0.709 us    |              }
+ 1) + 14.666 us   |            }
+ 1) + 14.958 us   |          }
+ 1) + 19.125 us   |        }
+ 1)   0.166 us    |        up_write();
+ 1)   0.167 us    |        userfaultfd_unmap_complete();
+ 1) + 23.417 us   |      }
+ 1)   0.166 us    |      fput();
+ 1) + 25.167 us   |    }
+ 1) + 25.584 us   |  }
+ 1)               |  __arm64_sys_mmap() {
+ 1)               |    ksys_mmap_pgoff() {
+ 1)               |      vm_mmap_pgoff() {
+ 1)               |        security_mmap_file() {
+ 1)   0.125 us    |          apparmor_mmap_file();
+ 1)   0.167 us    |          ima_file_mmap();
+ 1)   0.791 us    |        }
+ 1)               |        down_write_killable() {
+ 1)   0.125 us    |          dynamic_might_resched();
+ 1)   0.458 us    |        }
+ 1)               |        do_mmap() {
+ 1)               |          __get_unmapped_area() {
+ 1)               |            mm_get_unmapped_area_vmflags() {
+ 1)               |              generic_get_unmapped_area_topdown() {
+ 1)               |                vm_unmapped_area() {
+ 1)   0.333 us    |                  unmapped_area_topdown();
+ 1)   0.625 us    |                }
+ 1)   0.958 us    |              }
+ 1)   1.250 us    |            }
+ 1)               |            security_mmap_addr() {
+ 1)   0.125 us    |              cap_mmap_addr();
+ 1)   0.459 us    |            }
+ 1)   2.208 us    |          }
+ 1)               |          mmap_region() {
+ 1)               |            __mmap_region() {
+ 1)   0.125 us    |              vm_get_page_prot();
+ 1)   0.125 us    |              may_expand_vm();
+ 1)   0.166 us    |              ksm_vma_flags();
+ 1)               |              vma_merge_new_range() {
+ 1)   0.125 us    |                can_vma_merge_left.constprop.0();
+ 1)   0.166 us    |                can_vma_merge_right();
+ 1)   0.708 us    |              }
+ 1)               |              __mmap_new_vma() {
+ 1)               |                vm_area_alloc() {
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.416 us    |                    dynamic_might_resched();
+ 1)               |                    __memcg_slab_post_alloc_hook() {
+ 1)               |                      obj_cgroup_charge_account() {
+ 1)   0.208 us    |                        __account_obj_stock();
+ 1)   0.458 us    |                      }
+ 1)   0.125 us    |                      __rcu_read_lock();
+ 1)   0.125 us    |                      __rcu_read_unlock();
+ 1)   1.375 us    |                    }
+ 1)   2.250 us    |                  }
+ 1)   2.583 us    |                }
+ 1)               |                kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                  dynamic_might_resched();
+ 1)   0.458 us    |                }
+ 1)               |                kmem_cache_alloc_bulk_noprof() {
+ 1)   0.125 us    |                  dynamic_might_resched();
+ 1)   0.708 us    |                }
+ 1)   0.167 us    |                __vma_start_write();
+ 1)               |                call_rcu() {
+ 1)               |                  __call_rcu_common() {
+ 1)   0.167 us    |                    rcu_segcblist_enqueue();
+ 1)   0.459 us    |                  }
+ 1)   0.750 us    |                }
+ 1)   0.167 us    |                vma_link_file();
+ 1)   10.000 us   |              }
+ 1)   0.166 us    |              perf_event_mmap();
+ 1)   0.125 us    |              vms_complete_munmap_vmas();
+ 1)   0.166 us    |              vm_stat_account();
+ 1)               |              vma_set_page_prot() {
+ 1)   0.167 us    |                vm_get_page_prot();
+ 1)   0.125 us    |                vma_wants_writenotify();
+ 1)   0.750 us    |              }
+ 1) + 14.125 us   |            }
+ 1) + 14.417 us   |          }
+ 1) + 17.125 us   |        }
+ 1)   0.167 us    |        up_write();
+ 1)   0.125 us    |        userfaultfd_unmap_complete();
+ 1) + 19.583 us   |      }
+ 1) + 19.917 us   |    }
+ 1) + 20.250 us   |  }
+ 1)               |  __arm64_sys_mmap() {
+ 1)               |    ksys_mmap_pgoff() {
+ 1)               |      fget() {
+ 1)   0.125 us    |        __rcu_read_lock();
+ 1)   0.167 us    |        __rcu_read_unlock();
+ 1)   0.750 us    |      }
+ 1)               |      vm_mmap_pgoff() {
+ 1)               |        security_mmap_file() {
+ 1)               |          apparmor_mmap_file() {
+ 1)               |            common_file_perm() {
+ 1)               |              aa_file_perm() {
+ 1)   0.166 us    |                __rcu_read_lock();
+ 1)   0.167 us    |                __rcu_read_unlock();
+ 1)   0.708 us    |              }
+ 1)   1.042 us    |            }
+ 1)   1.375 us    |          }
+ 1)               |          ima_file_mmap() {
+ 1)               |            security_current_getlsmprop_subj() {
+ 1)   0.125 us    |              apparmor_current_getlsmprop_subj();
+ 1)   0.458 us    |            }
+ 1)   0.167 us    |            process_measurement();
+ 1)   0.167 us    |            process_measurement();
+ 1)   1.375 us    |          }
+ 1)   3.209 us    |        }
+ 1)               |        down_write_killable() {
+ 1)   0.167 us    |          dynamic_might_resched();
+ 1)   0.459 us    |        }
+ 1)               |        do_mmap() {
+ 1)               |          __get_unmapped_area() {
+ 1)               |            thp_get_unmapped_area() {
+ 1)               |              thp_get_unmapped_area_vmflags() {
+ 1)               |                mm_get_unmapped_area_vmflags() {
+ 1)   0.166 us    |                  generic_get_unmapped_area_topdown();
+ 1)   0.458 us    |                }
+ 1)   0.750 us    |              }
+ 1)   1.042 us    |            }
+ 1)               |            security_mmap_addr() {
+ 1)   0.542 us    |              cap_mmap_addr();
+ 1)   0.792 us    |            }
+ 1)   2.334 us    |          }
+ 1)   0.167 us    |          path_noexec();
+ 1)               |          memfd_check_seals_mmap() {
+ 1)   0.125 us    |            shmem_mapping();
+ 1)   0.458 us    |          }
+ 1)               |          mmap_region() {
+ 1)               |            __mmap_region() {
+ 1)   0.125 us    |              vm_get_page_prot();
+ 1)               |              vms_gather_munmap_vmas() {
+ 1)               |                __split_vma() {
+ 1)               |                  vm_area_dup() {
+ 1)               |                    kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                      dynamic_might_resched();
+ 1)               |                      __memcg_slab_post_alloc_hook() {
+ 1)               |                        obj_cgroup_charge_account() {
+ 1)   0.166 us    |                          __account_obj_stock();
+ 1)   0.458 us    |                        }
+ 1)   0.125 us    |                        __rcu_read_lock();
+ 1)   0.167 us    |                        __rcu_read_unlock();
+ 1)   1.417 us    |                      }
+ 1)   2.000 us    |                    }
+ 1)   0.125 us    |                    vm_area_init_from();
+ 1)   0.125 us    |                    anon_vma_name();
+ 1)   2.958 us    |                  }
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                    dynamic_might_resched();
+ 1)   0.500 us    |                  }
+ 1)   0.167 us    |                  vma_dup_policy();
+ 1)   0.166 us    |                  anon_vma_clone();
+ 1)               |                  __vma_start_write() {
+ 1)   0.125 us    |                    finish_rcuwait();
+ 1)   0.458 us    |                  }
+ 1)   0.125 us    |                  __vma_start_write();
+ 1)   0.166 us    |                  init_multi_vma_prep();
+ 1)   0.167 us    |                  vma_prepare();
+ 1)   0.292 us    |                  vma_adjust_trans_huge();
+ 1)               |                  vma_complete() {
+ 1)               |                    call_rcu() {
+ 1)               |                      __call_rcu_common() {
+ 1)   0.167 us    |                        rcu_segcblist_enqueue();
+ 1)   0.458 us    |                      }
+ 1)   0.792 us    |                    }
+ 1)   1.417 us    |                  }
+ 1)   8.250 us    |                }
+ 1)               |                __split_vma() {
+ 1)               |                  vm_area_dup() {
+ 1)               |                    kmem_cache_alloc_noprof() {
+ 1)   0.167 us    |                      dynamic_might_resched();
+ 1)               |                      __memcg_slab_post_alloc_hook() {
+ 1)               |                        obj_cgroup_charge_account() {
+ 1)   0.125 us    |                          __rcu_read_lock();
+ 1)   0.125 us    |                          __rcu_read_lock();
+ 1)   0.125 us    |                          __rcu_read_unlock();
+ 1)   0.125 us    |                          __rcu_read_unlock();
+ 1)   0.167 us    |                          try_charge_memcg();
+ 1)               |                          mod_memcg_state() {
+ 1)   0.167 us    |                            css_rstat_updated();
+ 1)   0.500 us    |                          }
+ 1)   0.125 us    |                          __rcu_read_lock();
+ 1)   0.125 us    |                          __rcu_read_unlock();
+ 1)               |                          refill_obj_stock() {
+ 1)   0.167 us    |                            __account_obj_stock();
+ 1)   0.458 us    |                          }
+ 1)   3.625 us    |                        }
+ 1)   0.125 us    |                        __rcu_read_lock();
+ 1)   0.125 us    |                        __rcu_read_unlock();
+ 1)   4.500 us    |                      }
+ 1)   5.125 us    |                    }
+ 1)   0.125 us    |                    vm_area_init_from();
+ 1)   0.167 us    |                    anon_vma_name();
+ 1)   6.334 us    |                  }
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                    dynamic_might_resched();
+ 1)               |                    __slab_alloc.isra.0() {
+ 1)   0.666 us    |                      ___slab_alloc();
+ 1)   1.000 us    |                    }
+ 1)   1.625 us    |                  }
+ 1)   0.125 us    |                  vma_dup_policy();
+ 1)   0.125 us    |                  anon_vma_clone();
+ 1)   0.125 us    |                  __vma_start_write();
+ 1)   0.125 us    |                  init_multi_vma_prep();
+ 1)   0.167 us    |                  vma_prepare();
+ 1)   0.167 us    |                  vma_adjust_trans_huge();
+ 1)               |                  vma_complete() {
+ 1)               |                    call_rcu() {
+ 1)               |                      __call_rcu_common() {
+ 1)   0.167 us    |                        rcu_segcblist_enqueue();
+ 1)   0.500 us    |                      }
+ 1)   0.791 us    |                    }
+ 1)   1.209 us    |                  }
+ 1) + 11.791 us   |                }
+ 1)   0.166 us    |                vma_mark_detached();
+ 1)   0.125 us    |                userfaultfd_unmap_prep();
+ 1) + 21.417 us   |              }
+ 1)   0.125 us    |              may_expand_vm();
+ 1)   0.125 us    |              tlb_gather_mmu();
+ 1)               |              unmap_vmas() {
+ 1)   0.125 us    |                dynamic_might_resched();
+ 1)               |                unmap_single_vma.isra.0() {
+ 1)               |                  unmap_page_range() {
+ 1)   0.125 us    |                    dynamic_cond_resched();
+ 1)               |                    zap_pte_range() {
+ 1)               |                      __pte_offset_map_lock() {
+ 1)               |                        ___pte_offset_map() {
+ 1)   0.125 us    |                          __rcu_read_lock();
+ 1)   0.458 us    |                        }
+ 1)   0.167 us    |                        _raw_spin_lock();
+ 1)   1.000 us    |                      }
+ 1)   0.125 us    |                      flush_tlb_batched_pending();
+ 1)   0.125 us    |                      _raw_spin_unlock();
+ 1)   0.125 us    |                      __rcu_read_unlock();
+ 1)   2.417 us    |                    }
+ 1)   0.166 us    |                    dynamic_cond_resched();
+ 1)   0.125 us    |                    dynamic_cond_resched();
+ 1)   3.834 us    |                  }
+ 1)   4.166 us    |                }
+ 1)   4.792 us    |              }
+ 1)               |              free_pgtables() {
+ 1)   0.167 us    |                unlink_anon_vmas();
+ 1)   0.125 us    |                unlink_file_vma_batch_init();
+ 1)   0.125 us    |                unlink_file_vma_batch_add();
+ 1)   0.125 us    |                unlink_file_vma_batch_final();
+ 1)   0.167 us    |                free_pgd_range();
+ 1)   1.750 us    |              }
+ 1)   0.167 us    |              tlb_finish_mmu();
+ 1)               |              ext4_file_mmap_prepare() {
+ 1)               |                touch_atime() {
+ 1)               |                  atime_needs_update() {
+ 1)   0.125 us    |                    make_vfsuid();
+ 1)   0.125 us    |                    make_vfsgid();
+ 1)               |                    current_time() {
+ 1)   0.167 us    |                      ktime_get_coarse_real_ts64_mg();
+ 1)   0.166 us    |                      timestamp_truncate();
+ 1)   0.750 us    |                    }
+ 1)   1.625 us    |                  }
+ 1)   1.917 us    |                }
+ 1)   2.250 us    |              }
+ 1)   0.125 us    |              ksm_vma_flags();
+ 1)               |              vma_merge_new_range() {
+ 1)   0.166 us    |                can_vma_merge_left.constprop.0();
+ 1)   0.167 us    |                can_vma_merge_right();
+ 1)   0.792 us    |              }
+ 1)               |              __mmap_new_vma() {
+ 1)               |                vm_area_alloc() {
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.167 us    |                    dynamic_might_resched();
+ 1)               |                    __memcg_slab_post_alloc_hook() {
+ 1)               |                      obj_cgroup_charge_account() {
+ 1)   0.167 us    |                        __account_obj_stock();
+ 1)   0.500 us    |                      }
+ 1)   0.166 us    |                      __rcu_read_lock();
+ 1)   0.125 us    |                      __rcu_read_unlock();
+ 1)   1.375 us    |                    }
+ 1)   2.000 us    |                  }
+ 1)   2.292 us    |                }
+ 1)   0.167 us    |                __vma_start_write();
+ 1)               |                vma_link_file() {
+ 1)               |                  down_write() {
+ 1)   0.125 us    |                    dynamic_might_resched();
+ 1)   0.417 us    |                  }
+ 1)   1.542 us    |                  vma_interval_tree_insert();
+ 1)   0.125 us    |                  up_write();
+ 1)   2.750 us    |                }
+ 1)               |                khugepaged_enter_vma() {
+ 1)   0.125 us    |                  hugepage_pmd_enabled();
+ 1)   0.167 us    |                  __thp_vma_allowable_orders();
+ 1)   0.750 us    |                }
+ 1)   6.875 us    |              }
+ 1)   0.125 us    |              perf_event_mmap();
+ 1)               |              vms_complete_munmap_vmas() {
+ 1)               |                remove_vma() {
+ 1)   0.167 us    |                  dynamic_might_resched();
+ 1)               |                  vm_area_free() {
+ 1)   0.167 us    |                    kfree();
+ 1)               |                    kmem_cache_free() {
+ 1)               |                      __memcg_slab_free_hook() {
+ 1)               |                        refill_obj_stock() {
+ 1)   0.167 us    |                          __account_obj_stock();
+ 1)   0.458 us    |                        }
+ 1)   0.167 us    |                        __rcu_read_lock();
+ 1)   0.167 us    |                        __rcu_read_unlock();
+ 1)   1.334 us    |                      }
+ 1)   1.666 us    |                    }
+ 1)   2.292 us    |                  }
+ 1)   2.917 us    |                }
+ 1)   3.333 us    |              }
+ 1)   0.125 us    |              vm_stat_account();
+ 1)   0.166 us    |              uprobe_mmap();
+ 1)               |              vma_set_page_prot() {
+ 1)   0.125 us    |                vm_get_page_prot();
+ 1)   0.125 us    |                vma_wants_writenotify();
+ 1)   0.750 us    |              }
+ 1) + 46.208 us   |            }
+ 1) + 46.500 us   |          }
+ 1) + 50.250 us   |        }
+ 1)   0.125 us    |        up_write();
+ 1)   0.167 us    |        userfaultfd_unmap_complete();
+ 1) + 55.125 us   |      }
+ 1)   0.125 us    |      fput();
+ 1) + 56.709 us   |    }
+ 1) + 56.959 us   |  }
+ 1)               |  __arm64_sys_mmap() {
+ 1)               |    ksys_mmap_pgoff() {
+ 1)               |      fget() {
+ 1)   0.167 us    |        __rcu_read_lock();
+ 1)   0.125 us    |        __rcu_read_unlock();
+ 1)   0.792 us    |      }
+ 1)               |      vm_mmap_pgoff() {
+ 1)               |        security_mmap_file() {
+ 1)               |          apparmor_mmap_file() {
+ 1)               |            common_file_perm() {
+ 1)               |              aa_file_perm() {
+ 1)   0.166 us    |                __rcu_read_lock();
+ 1)   0.167 us    |                __rcu_read_unlock();
+ 1)   0.708 us    |              }
+ 1)   1.042 us    |            }
+ 1)   1.625 us    |          }
+ 1)               |          ima_file_mmap() {
+ 1)               |            security_current_getlsmprop_subj() {
+ 1)   0.167 us    |              apparmor_current_getlsmprop_subj();
+ 1)   0.417 us    |            }
+ 1)   0.708 us    |          }
+ 1)   2.792 us    |        }
+ 1)               |        down_write_killable() {
+ 1)   0.125 us    |          dynamic_might_resched();
+ 1)   0.458 us    |        }
+ 1)               |        do_mmap() {
+ 1)               |          __get_unmapped_area() {
+ 1)               |            thp_get_unmapped_area() {
+ 1)               |              thp_get_unmapped_area_vmflags() {
+ 1)               |                mm_get_unmapped_area_vmflags() {
+ 1)   0.167 us    |                  generic_get_unmapped_area_topdown();
+ 1)   0.459 us    |                }
+ 1)   0.750 us    |              }
+ 1)   1.041 us    |            }
+ 1)               |            security_mmap_addr() {
+ 1)   0.167 us    |              cap_mmap_addr();
+ 1)   0.417 us    |            }
+ 1)   1.958 us    |          }
+ 1)   0.125 us    |          path_noexec();
+ 1)               |          memfd_check_seals_mmap() {
+ 1)   0.166 us    |            shmem_mapping();
+ 1)   0.416 us    |          }
+ 1)               |          mmap_region() {
+ 1)               |            __mmap_region() {
+ 1)   0.166 us    |              vm_get_page_prot();
+ 1)               |              vms_gather_munmap_vmas() {
+ 1)               |                __split_vma() {
+ 1)               |                  vm_area_dup() {
+ 1)               |                    kmem_cache_alloc_noprof() {
+ 1)   0.166 us    |                      dynamic_might_resched();
+ 1)               |                      __memcg_slab_post_alloc_hook() {
+ 1)               |                        obj_cgroup_charge_account() {
+ 1)   0.125 us    |                          __account_obj_stock();
+ 1)   0.416 us    |                        }
+ 1)   0.125 us    |                        __rcu_read_lock();
+ 1)   0.125 us    |                        __rcu_read_unlock();
+ 1)   1.333 us    |                      }
+ 1)   1.958 us    |                    }
+ 1)   0.167 us    |                    vm_area_init_from();
+ 1)   0.250 us    |                    anon_vma_name();
+ 1)   2.958 us    |                  }
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                    dynamic_might_resched();
+ 1)   0.583 us    |                  }
+ 1)   0.166 us    |                  vma_dup_policy();
+ 1)   0.167 us    |                  anon_vma_clone();
+ 1)               |                  __vma_start_write() {
+ 1)   0.125 us    |                    finish_rcuwait();
+ 1)   0.458 us    |                  }
+ 1)   0.167 us    |                  __vma_start_write();
+ 1)   0.125 us    |                  init_multi_vma_prep();
+ 1)               |                  vma_prepare() {
+ 1)   0.125 us    |                    uprobe_munmap();
+ 1)               |                    down_write() {
+ 1)   0.167 us    |                      dynamic_might_resched();
+ 1)   0.417 us    |                    }
+ 1)               |                    vma_interval_tree_insert() {
+ 1)   0.167 us    |                      vma_interval_tree_augment_rotate();
+ 1)   0.541 us    |                    }
+ 1)   0.167 us    |                    vma_interval_tree_remove();
+ 1)   2.083 us    |                  }
+ 1)   0.167 us    |                  vma_adjust_trans_huge();
+ 1)               |                  vma_complete() {
+ 1)               |                    vma_interval_tree_insert() {
+ 1)   0.125 us    |                      vma_interval_tree_augment_rotate();
+ 1)   0.125 us    |                      vma_interval_tree_augment_rotate();
+ 1)   1.291 us    |                    }
+ 1)               |                    call_rcu() {
+ 1)               |                      __call_rcu_common() {
+ 1)   0.167 us    |                        rcu_segcblist_enqueue();
+ 1)   0.417 us    |                      }
+ 1)   0.750 us    |                    }
+ 1)   0.167 us    |                    up_write();
+ 1)   0.166 us    |                    uprobe_mmap();
+ 1)   0.166 us    |                    uprobe_mmap();
+ 1)   3.708 us    |                  }
+ 1) + 12.250 us   |                }
+ 1)   0.125 us    |                vma_mark_detached();
+ 1)   0.167 us    |                userfaultfd_unmap_prep();
+ 1) + 13.291 us   |              }
+ 1)   0.125 us    |              may_expand_vm();
+ 1)               |              security_vm_enough_memory_mm() {
+ 1)               |                cap_vm_enough_memory() {
+ 1)   0.125 us    |                  cap_capable();
+ 1)   0.459 us    |                }
+ 1)   0.125 us    |                __vm_enough_memory();
+ 1)   1.042 us    |              }
+ 1)   0.125 us    |              tlb_gather_mmu();
+ 1)               |              unmap_vmas() {
+ 1)   0.167 us    |                dynamic_might_resched();
+ 1)               |                unmap_single_vma.isra.0() {
+ 1)   0.125 us    |                  uprobe_munmap();
+ 1)               |                  unmap_page_range() {
+ 1)               |                    zap_pte_range() {
+ 1)               |                      __pte_offset_map_lock() {
+ 1)               |                        ___pte_offset_map() {
+ 1)   0.125 us    |                          __rcu_read_lock();
+ 1)   0.459 us    |                        }
+ 1)   0.166 us    |                        _raw_spin_lock();
+ 1)   1.042 us    |                      }
+ 1)   0.167 us    |                      flush_tlb_batched_pending();
+ 1)   0.125 us    |                      _raw_spin_unlock();
+ 1)   0.125 us    |                      __rcu_read_unlock();
+ 1)   2.250 us    |                    }
+ 1)   0.166 us    |                    dynamic_cond_resched();
+ 1)   0.125 us    |                    dynamic_cond_resched();
+ 1)   3.167 us    |                  }
+ 1)   3.791 us    |                }
+ 1)   4.333 us    |              }
+ 1)               |              free_pgtables() {
+ 1)   0.166 us    |                unlink_anon_vmas();
+ 1)   0.167 us    |                unlink_file_vma_batch_init();
+ 1)   0.167 us    |                unlink_file_vma_batch_add();
+ 1)               |                unlink_file_vma_batch_final() {
+ 1)               |                  unlink_file_vma_batch_process() {
+ 1)               |                    down_write() {
+ 1)   0.125 us    |                      dynamic_might_resched();
+ 1)   0.458 us    |                    }
+ 1)   0.125 us    |                    vma_interval_tree_remove();
+ 1)   0.166 us    |                    up_write();
+ 1)   1.333 us    |                  }
+ 1)   1.667 us    |                }
+ 1)   0.125 us    |                free_pgd_range();
+ 1)   3.208 us    |              }
+ 1)   0.125 us    |              tlb_finish_mmu();
+ 1)               |              ext4_file_mmap_prepare() {
+ 1)               |                touch_atime() {
+ 1)               |                  atime_needs_update() {
+ 1)   0.125 us    |                    make_vfsuid();
+ 1)   0.125 us    |                    make_vfsgid();
+ 1)               |                    current_time() {
+ 1)   0.167 us    |                      ktime_get_coarse_real_ts64_mg();
+ 1)   0.125 us    |                      timestamp_truncate();
+ 1)   0.750 us    |                    }
+ 1)   1.875 us    |                  }
+ 1)   2.209 us    |                }
+ 1)   2.459 us    |              }
+ 1)   0.167 us    |              ksm_vma_flags();
+ 1)               |              vma_merge_new_range() {
+ 1)   0.166 us    |                can_vma_merge_left.constprop.0();
+ 1)   0.167 us    |                can_vma_merge_right();
+ 1)   0.708 us    |              }
+ 1)               |              __mmap_new_vma() {
+ 1)               |                vm_area_alloc() {
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                    dynamic_might_resched();
+ 1)               |                    __memcg_slab_post_alloc_hook() {
+ 1)               |                      obj_cgroup_charge_account() {
+ 1)   0.167 us    |                        __account_obj_stock();
+ 1)   0.417 us    |                      }
+ 1)   0.125 us    |                      __rcu_read_lock();
+ 1)   0.125 us    |                      __rcu_read_unlock();
+ 1)   1.334 us    |                    }
+ 1)   2.000 us    |                  }
+ 1)   2.292 us    |                }
+ 1)   0.167 us    |                __vma_start_write();
+ 1)               |                vma_link_file() {
+ 1)               |                  down_write() {
+ 1)   0.125 us    |                    dynamic_might_resched();
+ 1)   0.458 us    |                  }
+ 1)   0.583 us    |                  vma_interval_tree_insert();
+ 1)   0.125 us    |                  up_write();
+ 1)   1.750 us    |                }
+ 1)               |                khugepaged_enter_vma() {
+ 1)   0.125 us    |                  hugepage_pmd_enabled();
+ 1)   0.167 us    |                  __thp_vma_allowable_orders();
+ 1)   0.750 us    |                }
+ 1)   5.791 us    |              }
+ 1)   0.125 us    |              perf_event_mmap();
+ 1)               |              vms_complete_munmap_vmas() {
+ 1)               |                remove_vma() {
+ 1)   0.125 us    |                  dynamic_might_resched();
+ 1)   0.166 us    |                  fput();
+ 1)               |                  vm_area_free() {
+ 1)   0.167 us    |                    kfree();
+ 1)               |                    kmem_cache_free() {
+ 1)               |                      __memcg_slab_free_hook() {
+ 1)               |                        refill_obj_stock() {
+ 1)   0.125 us    |                          __account_obj_stock();
+ 1)   0.417 us    |                        }
+ 1)   0.125 us    |                        __rcu_read_lock();
+ 1)   0.125 us    |                        __rcu_read_unlock();
+ 1)   1.334 us    |                      }
+ 1)   1.666 us    |                    }
+ 1)   2.250 us    |                  }
+ 1)   3.125 us    |                }
+ 1)   3.500 us    |              }
+ 1)   0.125 us    |              vm_stat_account();
+ 1)   0.167 us    |              uprobe_mmap();
+ 1)               |              vma_set_page_prot() {
+ 1)   0.125 us    |                vm_get_page_prot();
+ 1)   0.125 us    |                vma_wants_writenotify();
+ 1)   0.750 us    |              }
+ 1) + 39.291 us   |            }
+ 1) + 39.583 us   |          }
+ 1) + 42.917 us   |        }
+ 1)   0.125 us    |        up_write();
+ 1)   0.125 us    |        userfaultfd_unmap_complete();
+ 1) + 47.291 us   |      }
+ 1)   0.125 us    |      fput();
+ 1) + 48.834 us   |    }
+ 1) + 49.166 us   |  }
+ 1)               |  __arm64_sys_mmap() {
+ 1)               |    ksys_mmap_pgoff() {
+ 1)               |      vm_mmap_pgoff() {
+ 1)               |        security_mmap_file() {
+ 1)   0.417 us    |          apparmor_mmap_file();
+ 1)   0.166 us    |          ima_file_mmap();
+ 1)   1.041 us    |        }
+ 1)               |        down_write_killable() {
+ 1)   0.125 us    |          dynamic_might_resched();
+ 1)   0.458 us    |        }
+ 1)               |        do_mmap() {
+ 1)               |          __get_unmapped_area() {
+ 1)               |            mm_get_unmapped_area_vmflags() {
+ 1)   0.166 us    |              generic_get_unmapped_area_topdown();
+ 1)   0.416 us    |            }
+ 1)               |            security_mmap_addr() {
+ 1)   0.125 us    |              cap_mmap_addr();
+ 1)   0.458 us    |            }
+ 1)   1.333 us    |          }
+ 1)               |          mmap_region() {
+ 1)               |            __mmap_region() {
+ 1)   0.125 us    |              vm_get_page_prot();
+ 1)               |              vms_gather_munmap_vmas() {
+ 1)               |                __vma_start_write() {
+ 1)   0.166 us    |                  finish_rcuwait();
+ 1)   0.416 us    |                }
+ 1)   0.166 us    |                vma_mark_detached();
+ 1)   0.125 us    |                userfaultfd_unmap_prep();
+ 1)   1.542 us    |              }
+ 1)   0.167 us    |              may_expand_vm();
+ 1)               |              security_vm_enough_memory_mm() {
+ 1)               |                cap_vm_enough_memory() {
+ 1)   0.125 us    |                  cap_capable();
+ 1)   0.417 us    |                }
+ 1)   0.167 us    |                __vm_enough_memory();
+ 1)   1.042 us    |              }
+ 1)   0.166 us    |              tlb_gather_mmu();
+ 1)               |              unmap_vmas() {
+ 1)   0.125 us    |                dynamic_might_resched();
+ 1)               |                unmap_single_vma.isra.0() {
+ 1)   0.125 us    |                  uprobe_munmap();
+ 1)               |                  unmap_page_range() {
+ 1)               |                    zap_pte_range() {
+ 1)               |                      __pte_offset_map_lock() {
+ 1)               |                        ___pte_offset_map() {
+ 1)   0.125 us    |                          __rcu_read_lock();
+ 1)   0.417 us    |                        }
+ 1)   0.125 us    |                        _raw_spin_lock();
+ 1)   1.041 us    |                      }
+ 1)   0.125 us    |                      flush_tlb_batched_pending();
+ 1)   0.166 us    |                      _raw_spin_unlock();
+ 1)   0.167 us    |                      __rcu_read_unlock();
+ 1)   2.208 us    |                    }
+ 1)   0.125 us    |                    dynamic_cond_resched();
+ 1)   0.167 us    |                    dynamic_cond_resched();
+ 1)   3.125 us    |                  }
+ 1)   3.750 us    |                }
+ 1)   4.333 us    |              }
+ 1)               |              free_pgtables() {
+ 1)   0.125 us    |                unlink_anon_vmas();
+ 1)   0.125 us    |                unlink_file_vma_batch_init();
+ 1)   0.167 us    |                unlink_file_vma_batch_add();
+ 1)               |                unlink_file_vma_batch_final() {
+ 1)               |                  unlink_file_vma_batch_process() {
+ 1)               |                    down_write() {
+ 1)   0.167 us    |                      dynamic_might_resched();
+ 1)   0.417 us    |                    }
+ 1)   0.666 us    |                    vma_interval_tree_remove();
+ 1)   0.167 us    |                    up_write();
+ 1)   1.792 us    |                  }
+ 1)   2.125 us    |                }
+ 1)   0.167 us    |                free_pgd_range();
+ 1)   3.625 us    |              }
+ 1)   0.166 us    |              tlb_finish_mmu();
+ 1)   0.125 us    |              ksm_vma_flags();
+ 1)               |              vma_merge_new_range() {
+ 1)   0.167 us    |                can_vma_merge_left.constprop.0();
+ 1)   0.167 us    |                can_vma_merge_right();
+ 1)   1.041 us    |              }
+ 1)               |              __mmap_new_vma() {
+ 1)               |                vm_area_alloc() {
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.167 us    |                    dynamic_might_resched();
+ 1)               |                    __memcg_slab_post_alloc_hook() {
+ 1)               |                      obj_cgroup_charge_account() {
+ 1)   0.166 us    |                        __account_obj_stock();
+ 1)   0.458 us    |                      }
+ 1)   0.166 us    |                      __rcu_read_lock();
+ 1)   0.167 us    |                      __rcu_read_unlock();
+ 1)   1.417 us    |                    }
+ 1)   2.042 us    |                  }
+ 1)   2.333 us    |                }
+ 1)   0.125 us    |                __vma_start_write();
+ 1)   0.125 us    |                vma_link_file();
+ 1)   3.334 us    |              }
+ 1)   0.125 us    |              perf_event_mmap();
+ 1)               |              vms_complete_munmap_vmas() {
+ 1)               |                remove_vma() {
+ 1)   0.125 us    |                  dynamic_might_resched();
+ 1)   0.167 us    |                  fput();
+ 1)               |                  vm_area_free() {
+ 1)   0.125 us    |                    kfree();
+ 1)               |                    kmem_cache_free() {
+ 1)               |                      __memcg_slab_free_hook() {
+ 1)               |                        refill_obj_stock() {
+ 1)   0.166 us    |                          __account_obj_stock();
+ 1)   0.458 us    |                        }
+ 1)   0.167 us    |                        __rcu_read_lock();
+ 1)   0.166 us    |                        __rcu_read_unlock();
+ 1)   1.333 us    |                      }
+ 1)   1.625 us    |                    }
+ 1)   2.250 us    |                  }
+ 1)   3.084 us    |                }
+ 1)   3.416 us    |              }
+ 1)   0.125 us    |              vm_stat_account();
+ 1)               |              vma_set_page_prot() {
+ 1)   0.125 us    |                vm_get_page_prot();
+ 1)   0.125 us    |                vma_wants_writenotify();
+ 1)   0.750 us    |              }
+ 1) + 22.750 us   |            }
+ 1) + 23.083 us   |          }
+ 1) + 24.875 us   |        }
+ 1)   0.167 us    |        up_write();
+ 1)   0.125 us    |        userfaultfd_unmap_complete();
+ 1) + 27.583 us   |      }
+ 1) + 27.959 us   |    }
+ 1) + 28.250 us   |  }
+ 1)               |  __arm64_sys_mmap() {
+ 1)               |    ksys_mmap_pgoff() {
+ 1)               |      fget() {
+ 1)   0.166 us    |        __rcu_read_lock();
+ 1)   0.167 us    |        __rcu_read_unlock();
+ 1)   0.750 us    |      }
+ 1)               |      vm_mmap_pgoff() {
+ 1)               |        security_mmap_file() {
+ 1)               |          apparmor_mmap_file() {
+ 1)               |            common_file_perm() {
+ 1)               |              aa_file_perm() {
+ 1)   0.125 us    |                __rcu_read_lock();
+ 1)   0.167 us    |                __rcu_read_unlock();
+ 1)   0.750 us    |              }
+ 1)   1.041 us    |            }
+ 1)   1.375 us    |          }
+ 1)               |          ima_file_mmap() {
+ 1)               |            security_current_getlsmprop_subj() {
+ 1)   0.125 us    |              apparmor_current_getlsmprop_subj();
+ 1)   0.459 us    |            }
+ 1)   0.208 us    |            process_measurement();
+ 1)   0.167 us    |            process_measurement();
+ 1)   1.416 us    |          }
+ 1)   3.500 us    |        }
+ 1)               |        down_write_killable() {
+ 1)   0.167 us    |          dynamic_might_resched();
+ 1)   0.417 us    |        }
+ 1)               |        do_mmap() {
+ 1)               |          __get_unmapped_area() {
+ 1)               |            thp_get_unmapped_area() {
+ 1)               |              thp_get_unmapped_area_vmflags() {
+ 1)               |                mm_get_unmapped_area_vmflags() {
+ 1)   0.125 us    |                  generic_get_unmapped_area_topdown();
+ 1)   0.458 us    |                }
+ 1)   0.750 us    |              }
+ 1)   1.083 us    |            }
+ 1)               |            security_mmap_addr() {
+ 1)   0.125 us    |              cap_mmap_addr();
+ 1)   0.459 us    |            }
+ 1)   1.917 us    |          }
+ 1)   0.167 us    |          path_noexec();
+ 1)               |          memfd_check_seals_mmap() {
+ 1)   0.125 us    |            shmem_mapping();
+ 1)   0.458 us    |          }
+ 1)               |          mmap_region() {
+ 1)               |            __mmap_region() {
+ 1)   0.125 us    |              vm_get_page_prot();
+ 1)               |              vms_gather_munmap_vmas() {
+ 1)               |                __vma_start_write() {
+ 1)   0.167 us    |                  finish_rcuwait();
+ 1)   0.417 us    |                }
+ 1)   0.125 us    |                vma_mark_detached();
+ 1)   0.167 us    |                userfaultfd_unmap_prep();
+ 1)   1.500 us    |              }
+ 1)   0.167 us    |              may_expand_vm();
+ 1)   0.125 us    |              tlb_gather_mmu();
+ 1)               |              unmap_vmas() {
+ 1)   0.208 us    |                dynamic_might_resched();
+ 1)               |                unmap_single_vma.isra.0() {
+ 1)   0.125 us    |                  uprobe_munmap();
+ 1)               |                  unmap_page_range() {
+ 1)               |                    zap_pte_range() {
+ 1)               |                      __pte_offset_map_lock() {
+ 1)               |                        ___pte_offset_map() {
+ 1)   0.125 us    |                          __rcu_read_lock();
+ 1)   0.416 us    |                        }
+ 1)   0.125 us    |                        _raw_spin_lock();
+ 1)   1.042 us    |                      }
+ 1)   0.166 us    |                      flush_tlb_batched_pending();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.125 us    |                      folio_remove_rmap_ptes();
+ 1)   0.167 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.167 us    |                      folio_remove_rmap_ptes();
+ 1)   0.167 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.166 us    |                      folio_remove_rmap_ptes();
+ 1)   0.167 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.167 us    |                      folio_remove_rmap_ptes();
+ 1)   0.166 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.167 us    |                      folio_remove_rmap_ptes();
+ 1)   0.167 us    |                      __tlb_remove_folio_pages();
+ 1)   0.500 us    |                      vm_normal_page();
+ 1)   0.167 us    |                      folio_mark_accessed();
+ 1)   0.125 us    |                      folio_remove_rmap_ptes();
+ 1)   0.125 us    |                      __tlb_remove_folio_pages();
+ 1)   0.167 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.125 us    |                      folio_remove_rmap_ptes();
+ 1)               |                      __tlb_remove_folio_pages() {
+ 1)               |                        tlb_next_batch() {
+ 1)               |                          get_free_pages_noprof() {
+ 1)               |                            alloc_pages_noprof() {
+ 1)   0.750 us    |                              alloc_frozen_pages_noprof();
+ 1)   1.167 us    |                            }
+ 1)   1.417 us    |                          }
+ 1)   1.750 us    |                        }
+ 1)   2.083 us    |                      }
+ 1)   0.166 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.166 us    |                      folio_remove_rmap_ptes();
+ 1)   0.125 us    |                      __tlb_remove_folio_pages();
+ 1)   0.166 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.125 us    |                      folio_remove_rmap_ptes();
+ 1)   0.125 us    |                      __tlb_remove_folio_pages();
+ 1)   0.167 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.125 us    |                      folio_remove_rmap_ptes();
+ 1)   0.166 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.167 us    |                      folio_remove_rmap_ptes();
+ 1)   0.167 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.166 us    |                      folio_remove_rmap_ptes();
+ 1)   0.167 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.167 us    |                      folio_remove_rmap_ptes();
+ 1)   0.166 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.167 us    |                      folio_remove_rmap_ptes();
+ 1)   0.167 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.125 us    |                      folio_mark_accessed();
+ 1)   0.166 us    |                      folio_remove_rmap_ptes();
+ 1)   0.167 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      vm_normal_page();
+ 1)   0.167 us    |                      folio_mark_accessed();
+ 1)   0.167 us    |                      folio_remove_rmap_ptes();
+ 1)   0.125 us    |                      __tlb_remove_folio_pages();
+ 1)   0.125 us    |                      _raw_spin_unlock();
+ 1)   0.125 us    |                      __rcu_read_unlock();
+ 1) + 24.792 us   |                    }
+ 1)   0.125 us    |                    dynamic_cond_resched();
+ 1)               |                    zap_pte_range() {
+ 1)               |                      __pte_offset_map_lock() {
+ 1)               |                        ___pte_offset_map() {
+ 1)   0.167 us    |                          __rcu_read_lock();
+ 1)   0.458 us    |                        }
+ 1)   0.167 us    |                        _raw_spin_lock();
+ 1)   1.000 us    |                      }
+ 1)   0.125 us    |                      flush_tlb_batched_pending();
+ 1)   0.167 us    |                      _raw_spin_unlock();
+ 1)   0.166 us    |                      __rcu_read_unlock();
+ 1)   2.250 us    |                    }
+ 1)   0.125 us    |                    dynamic_cond_resched();
+ 1)   0.166 us    |                    dynamic_cond_resched();
+ 1) + 29.500 us   |                  }
+ 1) + 30.125 us   |                }
+ 1) + 30.792 us   |              }
+ 1)               |              free_pgtables() {
+ 1)   0.167 us    |                unlink_anon_vmas();
+ 1)   0.125 us    |                unlink_file_vma_batch_init();
+ 1)   0.125 us    |                unlink_file_vma_batch_add();
+ 1)               |                unlink_file_vma_batch_final() {
+ 1)               |                  unlink_file_vma_batch_process() {
+ 1)               |                    down_write() {
+ 1)   0.125 us    |                      dynamic_might_resched();
+ 1)   0.416 us    |                    }
+ 1)   0.167 us    |                    vma_interval_tree_remove();
+ 1)   0.167 us    |                    up_write();
+ 1)   1.375 us    |                  }
+ 1)   1.667 us    |                }
+ 1)               |                free_pgd_range() {
+ 1)               |                  tlb_remove_table() {
+ 1)               |                    get_free_pages_noprof() {
+ 1)               |                      alloc_pages_noprof() {
+ 1)               |                        alloc_frozen_pages_noprof() {
+ 1)               |                          alloc_pages_mpol() {
+ 1)   0.167 us    |                            policy_nodemask();
+ 1)               |                            __alloc_frozen_pages_noprof() {
+ 1)   0.167 us    |                              __next_zones_zonelist();
+ 1)   0.750 us    |                              get_page_from_freelist();
+ 1)   1.459 us    |                            }
+ 1)   2.083 us    |                          }
+ 1)   2.375 us    |                        }
+ 1)   2.667 us    |                      }
+ 1)   3.000 us    |                    }
+ 1)   3.250 us    |                  }
+ 1)   3.792 us    |                }
+ 1)   6.834 us    |              }
+ 1)               |              tlb_finish_mmu() {
+ 1)               |                call_rcu() {
+ 1)               |                  __call_rcu_common() {
+ 1)   0.125 us    |                    rcu_segcblist_enqueue();
+ 1)   0.459 us    |                  }
+ 1)   0.750 us    |                }
+ 1)               |                __tlb_batch_free_encoded_pages() {
+ 1)               |                  free_pages_and_swap_cache() {
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.167 us    |                    free_swap_cache();
+ 1)   0.166 us    |                    free_swap_cache();
+ 1)   0.167 us    |                    free_swap_cache();
+ 1)   0.208 us    |                    folios_put_refs();
+ 1)   2.667 us    |                  }
+ 1)   0.166 us    |                  dynamic_cond_resched();
+ 1)   3.250 us    |                }
+ 1)               |                __tlb_batch_free_encoded_pages() {
+ 1)               |                  free_pages_and_swap_cache() {
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.167 us    |                    free_swap_cache();
+ 1)   0.167 us    |                    free_swap_cache();
+ 1)   0.166 us    |                    free_swap_cache();
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.125 us    |                    free_swap_cache();
+ 1)   0.208 us    |                    folios_put_refs();
+ 1)   3.458 us    |                  }
+ 1)   0.125 us    |                  dynamic_cond_resched();
+ 1)   4.042 us    |                }
+ 1)               |                free_pages() {
+ 1)               |                  ___free_pages() {
+ 1)               |                    __free_frozen_pages() {
+ 1)   0.167 us    |                      __get_pfnblock_flags_mask.isra.0();
+ 1)   0.166 us    |                      _raw_spin_trylock();
+ 1)   0.209 us    |                      free_frozen_page_commit();
+ 1)   0.125 us    |                      _raw_spin_unlock();
+ 1)   1.458 us    |                    }
+ 1)   1.792 us    |                  }
+ 1)   2.084 us    |                }
+ 1) + 11.375 us   |              }
+ 1)               |              ext4_file_mmap_prepare() {
+ 1)               |                touch_atime() {
+ 1)               |                  atime_needs_update() {
+ 1)   0.167 us    |                    make_vfsuid();
+ 1)   0.167 us    |                    make_vfsgid();
+ 1)               |                    current_time() {
+ 1)   0.125 us    |                      ktime_get_coarse_real_ts64_mg();
+ 1)   0.125 us    |                      timestamp_truncate();
+ 1)   0.750 us    |                    }
+ 1)   1.625 us    |                  }
+ 1)   1.916 us    |                }
+ 1)   2.208 us    |              }
+ 1)   0.125 us    |              ksm_vma_flags();
+ 1)               |              vma_merge_new_range() {
+ 1)   0.167 us    |                can_vma_merge_left.constprop.0();
+ 1)   0.125 us    |                can_vma_merge_right();
+ 1)   0.750 us    |              }
+ 1)               |              __mmap_new_vma() {
+ 1)               |                vm_area_alloc() {
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.125 us    |                    dynamic_might_resched();
+ 1)               |                    __memcg_slab_post_alloc_hook() {
+ 1)               |                      obj_cgroup_charge_account() {
+ 1)   0.166 us    |                        __account_obj_stock();
+ 1)   0.416 us    |                      }
+ 1)   0.167 us    |                      __rcu_read_lock();
+ 1)   0.166 us    |                      __rcu_read_unlock();
+ 1)   1.375 us    |                    }
+ 1)   2.042 us    |                  }
+ 1)   2.292 us    |                }
+ 1)   0.167 us    |                __vma_start_write();
+ 1)               |                vma_link_file() {
+ 1)               |                  down_write() {
+ 1)   0.167 us    |                    dynamic_might_resched();
+ 1)   0.458 us    |                  }
+ 1)   0.250 us    |                  vma_interval_tree_insert();
+ 1)   0.125 us    |                  up_write();
+ 1)   1.417 us    |                }
+ 1)               |                khugepaged_enter_vma() {
+ 1)   0.125 us    |                  hugepage_pmd_enabled();
+ 1)   0.167 us    |                  __thp_vma_allowable_orders();
+ 1)   0.709 us    |                }
+ 1)   5.458 us    |              }
+ 1)   0.125 us    |              perf_event_mmap();
+ 1)               |              vms_complete_munmap_vmas() {
+ 1)               |                remove_vma() {
+ 1)   0.125 us    |                  dynamic_might_resched();
+ 1)   0.125 us    |                  fput();
+ 1)               |                  vm_area_free() {
+ 1)   0.125 us    |                    kfree();
+ 1)               |                    kmem_cache_free() {
+ 1)               |                      __memcg_slab_free_hook() {
+ 1)               |                        refill_obj_stock() {
+ 1)   0.166 us    |                          __account_obj_stock();
+ 1)   0.458 us    |                        }
+ 1)   0.167 us    |                        __rcu_read_lock();
+ 1)   0.125 us    |                        __rcu_read_unlock();
+ 1)   1.375 us    |                      }
+ 1)   1.667 us    |                    }
+ 1)   2.584 us    |                  }
+ 1)   3.500 us    |                }
+ 1)   3.833 us    |              }
+ 1)   0.125 us    |              vm_stat_account();
+ 1)   0.167 us    |              uprobe_mmap();
+ 1)               |              vma_set_page_prot() {
+ 1)   0.125 us    |                vm_get_page_prot();
+ 1)   0.125 us    |                vma_wants_writenotify();
+ 1)   0.750 us    |              }
+ 1) + 67.250 us   |            }
+ 1) + 67.542 us   |          }
+ 1) + 70.875 us   |        }
+ 1)   0.167 us    |        up_write();
+ 1)   0.125 us    |        userfaultfd_unmap_complete();
+ 1) + 76.000 us   |      }
+ 1)   0.125 us    |      fput();
+ 1) + 77.542 us   |    }
+ 1) + 77.916 us   |  }
+ 1)               |  __arm64_sys_mmap() {
+ 1)               |    ksys_mmap_pgoff() {
+ 1)               |      fget() {
+ 1)   0.542 us    |        __rcu_read_lock();
+ 1)   0.166 us    |        __rcu_read_unlock();
+ 1)   1.625 us    |      }
+ 1)               |      vm_mmap_pgoff() {
+ 1)               |        security_mmap_file() {
+ 1)               |          apparmor_mmap_file() {
+ 1)               |            common_file_perm() {
+ 1)               |              aa_file_perm() {
+ 1)   0.125 us    |                __rcu_read_lock();
+ 1)   0.166 us    |                __rcu_read_unlock();
+ 1)   0.750 us    |              }
+ 1)   1.042 us    |            }
+ 1)   1.417 us    |          }
+ 1)               |          ima_file_mmap() {
+ 1)               |            security_current_getlsmprop_subj() {
+ 1)   0.167 us    |              apparmor_current_getlsmprop_subj();
+ 1)   0.459 us    |            }
+ 1)   0.833 us    |          }
+ 1)   2.792 us    |        }
+ 1)               |        down_write_killable() {
+ 1)   0.125 us    |          dynamic_might_resched();
+ 1)   0.458 us    |        }
+ 1)               |        do_mmap() {
+ 1)               |          __get_unmapped_area() {
+ 1)               |            shmem_get_unmapped_area() {
+ 1)               |              shmem_get_unmapped_area.part.0() {
+ 1)               |                mm_get_unmapped_area() {
+ 1)               |                  generic_get_unmapped_area_topdown() {
+ 1)               |                    vm_unmapped_area() {
+ 1)   1.375 us    |                      unmapped_area_topdown();
+ 1)   1.708 us    |                    }
+ 1)   2.083 us    |                  }
+ 1)   2.375 us    |                }
+ 1)   2.958 us    |              }
+ 1)   3.417 us    |            }
+ 1)               |            security_mmap_addr() {
+ 1)   0.125 us    |              cap_mmap_addr();
+ 1)   0.500 us    |            }
+ 1)   4.500 us    |          }
+ 1)   0.125 us    |          path_noexec();
+ 1)               |          memfd_check_seals_mmap() {
+ 1)   0.125 us    |            shmem_mapping();
+ 1)   0.458 us    |          }
+ 1)               |          mmap_region() {
+ 1)               |            __mmap_region() {
+ 1)   0.166 us    |              vm_get_page_prot();
+ 1)   0.125 us    |              shmem_mapping();
+ 1)   0.166 us    |              may_expand_vm();
+ 1)   0.167 us    |              ksm_vma_flags();
+ 1)               |              vma_merge_new_range() {
+ 1)   0.125 us    |                can_vma_merge_left.constprop.0();
+ 1)   0.167 us    |                can_vma_merge_right();
+ 1)   0.792 us    |              }
+ 1)               |              __mmap_new_vma() {
+ 1)               |                vm_area_alloc() {
+ 1)               |                  kmem_cache_alloc_noprof() {
+ 1)   0.166 us    |                    dynamic_might_resched();
+ 1)               |                    __memcg_slab_post_alloc_hook() {
+ 1)               |                      obj_cgroup_charge_account() {
+ 1)   0.166 us    |                        __account_obj_stock();
+ 1)   0.500 us    |                      }
+ 1)   0.167 us    |                      __rcu_read_lock();
+ 1)   0.125 us    |                      __rcu_read_unlock();
+ 1)   1.417 us    |                    }
+ 1)   2.125 us    |                  }
+ 1)   2.458 us    |                }
+ 1)               |                kmem_cache_alloc_noprof() {
+ 1)   0.166 us    |                  dynamic_might_resched();
+ 1)   0.500 us    |                }
+ 1)               |                shmem_mmap() {
+ 1)               |                  touch_atime() {
+ 1)               |                    atime_needs_update() {
+ 1)   0.125 us    |                      make_vfsuid();
+ 1)   0.167 us    |                      make_vfsgid();
+ 1)               |                      current_time() {
+ 1)   0.167 us    |                        ktime_get_coarse_real_ts64_mg();
+ 1)   0.167 us    |                        timestamp_truncate();
+ 1)   0.792 us    |                      }
+ 1)   1.792 us    |                    }
+ 1)   0.166 us    |                    mnt_get_write_access();
+ 1)               |                    generic_update_time() {
+ 1)               |                      inode_update_timestamps() {
+ 1)               |                        current_time() {
+ 1)   0.125 us    |                          ktime_get_coarse_real_ts64_mg();
+ 1)   0.125 us    |                          timestamp_truncate();
+ 1)   0.750 us    |                        }
+ 1)   1.333 us    |                      }
+ 1)   0.292 us    |                      __mark_inode_dirty();
+ 1)   2.042 us    |                    }
+ 1)   0.167 us    |                    mnt_put_write_access();
+ 1)   5.250 us    |                  }
+ 1)   5.541 us    |                }
+ 1)   0.208 us    |                __vma_start_write();
+ 1)               |                call_rcu() {
+ 1)               |                  __call_rcu_common() {
+ 1)   0.125 us    |                    rcu_segcblist_enqueue();
+ 1)   0.750 us    |                  }
+ 1)   1.083 us    |                }
+ 1)               |                vma_link_file() {
+ 1)               |                  down_write() {
+ 1)   0.167 us    |                    dynamic_might_resched();
+ 1)   0.458 us    |                  }
+ 1)   0.166 us    |                  vma_interval_tree_insert();
+ 1)   0.167 us    |                  up_write();
+ 1)   1.375 us    |                }
+ 1)               |                khugepaged_enter_vma() {
+ 1)   0.167 us    |                  hugepage_pmd_enabled();
+ 1)   0.209 us    |                  __thp_vma_allowable_orders();
+ 1)   0.916 us    |                }
+ 1) + 14.458 us   |              }
+ 1)   0.167 us    |              perf_event_mmap();
+ 1)   0.167 us    |              vms_complete_munmap_vmas();
+ 1)   0.167 us    |              vm_stat_account();
+ 1)   0.167 us    |              uprobe_mmap();
+ 1)               |              vma_set_page_prot() {
+ 1)   0.125 us    |                vm_get_page_prot();
+ 1)   0.167 us    |                vma_wants_writenotify();
+ 1)   0.709 us    |              }
+ 1) + 20.625 us   |            }
+ 1) + 21.208 us   |          }
+ 1) + 27.292 us   |        }
+ 1)   0.125 us    |        up_write();
+ 1)   0.167 us    |        userfaultfd_unmap_complete();
+ 1) + 31.791 us   |      }
+ 1)   0.125 us    |      fput();
+ 1) + 34.334 us   |    }
+ 1) + 36.500 us   |  }
