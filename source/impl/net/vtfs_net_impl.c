@@ -488,57 +488,69 @@ static ssize_t vtfs_net_storage_read(
 }
 
 static ssize_t vtfs_net_storage_write(
-    struct super_block* sb, vtfs_ino_t ino, const char* buffer, size_t len, loff_t* offset
+  struct super_block* sb, vtfs_ino_t ino, const char* buffer, size_t len, loff_t* offset
 ) {
-  struct vtfs_net_storage* storage = get_storage(sb);
-  if (!storage) {
-    printk(KERN_ERR "[vtfs_net] Storage not initialized\n");
-    return -EINVAL;
-  }
+struct vtfs_net_storage* storage = get_storage(sb);
+if (!storage) {
+  printk(KERN_ERR "[vtfs_net] Storage not initialized\n");
+  return -EINVAL;
+}
 
-  if (!buffer || !offset) {
-    printk(KERN_ERR "[vtfs_net] Invalid arguments: buffer or offset is NULL\n");
-    return -EINVAL;
-  }
+if (!buffer || !offset) {
+  printk(KERN_ERR "[vtfs_net] Invalid arguments: buffer or offset is NULL\n");
+  return -EINVAL;
+}
 
-  char* kernel_buffer = kmalloc(len, GFP_KERNEL);
+const size_t MAX_CHUNK_SIZE = 4 * 1024; // 4KB
+
+loff_t current_offset = *offset;
+size_t total_written = 0;
+size_t remaining = len;
+const char* current_ptr = buffer;
+
+while (remaining > 0) {
+  size_t chunk_size = (remaining > MAX_CHUNK_SIZE) ? MAX_CHUNK_SIZE : remaining;
+  
+  char* kernel_buffer = kmalloc(chunk_size, GFP_KERNEL);
   if (!kernel_buffer) {
-    return -ENOMEM;
+    return total_written > 0 ? (ssize_t)total_written : -ENOMEM;
   }
   
-  if (copy_from_user(kernel_buffer, (const char __user*)buffer, len)) {
+  if (copy_from_user(kernel_buffer, current_ptr, chunk_size)) {
     kfree(kernel_buffer);
-    return -EFAULT;
+    return total_written > 0 ? (ssize_t)total_written : -EFAULT;
   }
 
-  size_t base64_size = BASE64_SIZE(len);
+  size_t base64_size = BASE64_SIZE(chunk_size);
   char* base64_buffer = kmalloc(base64_size, GFP_KERNEL);
   if (!base64_buffer) {
     kfree(kernel_buffer);
-    return -ENOMEM;
+    return total_written > 0 ? (ssize_t)total_written : -ENOMEM;
   }
 
-  int base64_len = base64_encode(kernel_buffer, len, base64_buffer, base64_size);
+  int base64_len = base64_encode(kernel_buffer, chunk_size, base64_buffer, base64_size);
   kfree(kernel_buffer);
   if (base64_len < 0) {
     printk(KERN_ERR "[vtfs_net] Base64 encoding failed\n");
     kfree(base64_buffer);
-    return -EINVAL;
+    return total_written > 0 ? (ssize_t)total_written : -EINVAL;
   }
 
+  // URL encoding
   char* encoded_data = kmalloc(base64_size * 3, GFP_KERNEL);
   if (!encoded_data) {
     kfree(base64_buffer);
-    return -ENOMEM;
+    return total_written > 0 ? (ssize_t)total_written : -ENOMEM;
   }
   encode(base64_buffer, encoded_data);
+  kfree(base64_buffer);
 
   char ino_str[32];
   char len_str[32];
   char offset_str[32];
   snprintf(ino_str, sizeof(ino_str), "%llu", (unsigned long long)ino);
-  snprintf(len_str, sizeof(len_str), "%zu", len);
-  snprintf(offset_str, sizeof(offset_str), "%lld", (long long)*offset);
+  snprintf(len_str, sizeof(len_str), "%zu", chunk_size);
+  snprintf(offset_str, sizeof(offset_str), "%lld", (long long)current_offset);
 
   char response_buffer[256];
   memset(response_buffer, 0, sizeof(response_buffer));
@@ -557,11 +569,15 @@ static ssize_t vtfs_net_storage_write(
       "data", encoded_data
   );
 
-  kfree(base64_buffer);
   kfree(encoded_data);
 
   if (result != 0) {
-    printk(KERN_ERR "[vtfs_net] Server write failed with code: %lld\n", (long long)result);
+    printk(KERN_ERR "[vtfs_net] Server write failed with code: %lld at offset %lld\n", 
+           (long long)result, (long long)current_offset);
+    if (total_written > 0) {
+      *offset = current_offset;
+      return (ssize_t)total_written;
+    }
     if (result > 0) {
       return (int)result;
     }
@@ -570,6 +586,10 @@ static ssize_t vtfs_net_storage_write(
 
   if (sizeof(response_buffer) < sizeof(int64_t)) {
     printk(KERN_ERR "[vtfs_net] Response buffer too small\n");
+    if (total_written > 0) {
+      *offset = current_offset;
+      return (ssize_t)total_written;
+    }
     return -EINVAL;
   }
 
@@ -577,9 +597,18 @@ static ssize_t vtfs_net_storage_write(
   memcpy(&written_le, response_buffer, sizeof(written_le));
   int64_t written = le64_to_cpu(written_le);
 
-  *offset += written;
+  current_offset += written;
+  total_written += written;
+  current_ptr += written;
+  remaining -= written;
 
-  return (ssize_t)written;
+  if (written < (ssize_t)chunk_size) {
+    break;
+  }
+}
+
+*offset = current_offset;
+return (ssize_t)total_written;
 }
 
 static int vtfs_net_storage_link(
